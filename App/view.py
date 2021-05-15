@@ -34,21 +34,39 @@ se hace la solicitud al controlador para ejecutar la
 operación solicitada
 """
 
-def printMenu():
-    print("Bienvenido")
-    print("1- Cargar información en el catálogo")
-    print("2- ")
+connections = 'connections.csv'
+countries = 'countries.csv'
+landing_points = 'landing_points.csv'
 
-catalog = None
+
+def printMenu():
+    print('\n')
+    print("✨💕🌈 Bienvenido 🌈💕✨")
+    print("__________________________________________\n")
+    print("1️⃣ Inicializar Analizador 🤔💭🧮")
+    print("2️⃣ Cargar información 🤑📈🔥")
+
+
+def optionTwo(analyzer):
+    print("\nCargando información...")
+    controller.loadLandingPoints(analyzer, landing_points)
+    print('\n')
 
 """
 Menu principal
 """
 while True:
     printMenu()
-    inputs = input('Seleccione una opción para continuar\n')
+    print("Ingrese una opción para continuar: 💯🤠")
+    inputs = input('🤡')
+    
     if int(inputs[0]) == 1:
-        print("Cargando información de los archivos ....")
+        print("\nInicializando....")
+        # cont es el analyzer que se usará de acá en adelante
+        analyzer = controller.init()
+        
+    elif int(inputs[0]) == 2:
+        optionTwo(analyzer)
 
     elif int(inputs[0]) == 2:
         pass
@@ -56,3 +74,11 @@ while True:
     else:
         sys.exit(0)
 sys.exit(0)
+
+
+
+if __name__ == "__main__":
+    threading.stack_size(67108864)  # 64MB stack
+    sys.setrecursionlimit(2 ** 20)
+    thread = threading.Thread(target=thread_cycle)
+    thread.start()

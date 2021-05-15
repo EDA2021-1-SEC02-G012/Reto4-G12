@@ -20,18 +20,45 @@
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
 
+
 import config as cf
-import model
+from App import model
+from DISClib.ADT import map as mp
+import time
 import csv
 
 
 """
 El controlador se encarga de mediar entre la vista y el modelo.
+Existen algunas operaciones en las que se necesita invocar
+el modelo varias veces o integrar varias de las respuestas
+del modelo en una sola respuesta.  Esta responsabilidad
+recae sobre el controlador.
 """
 
-# Inicialización del Catálogo de libros
+# ___________________________________________________
+#  Inicializacion del analyzer
+# ___________________________________________________
+
+
+def init():
+    """
+    Llama la funcion de inicializacion  del modelo.
+    """
+    # analyzer es utilizado para interactuar con el modelo
+    analyzer = model.newAnalyzer()
+    return analyzer
 
 # Funciones para la carga de datos
+
+def loadLandingPoints(analyzer, filename):
+    """.DS_Store"""
+    landingFile = cf.data_dir + filename
+    input_file = csv.DictReader(open(landingFile, encoding="utf-8"),
+                                delimiter=",")
+    
+    for i in input_file:
+        mp.put(analyzer['landing_points'], i['landing_point_id'], i)
 
 # Funciones de ordenamiento
 

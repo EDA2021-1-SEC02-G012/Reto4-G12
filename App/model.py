@@ -25,17 +25,50 @@
  """
 
 
-import config as cf
-from DISClib.ADT import list as lt
+import config
+from DISClib.ADT.graph import gr
 from DISClib.ADT import map as mp
-from DISClib.DataStructures import mapentry as me
-from DISClib.Algorithms.Sorting import shellsort as sa
-assert cf
+from DISClib.ADT import list as lt
+from DISClib.Algorithms.Graphs import scc
+from DISClib.Algorithms.Graphs import dijsktra as djk
+from DISClib.Utils import error as error
+assert config
 
 """
-Se define la estructura de un catálogo de videos. El catálogo tendrá dos listas, una para los videos, otra para las categorias de
-los mismos.
+En este archivo definimos los TADs que vamos a usar y las operaciones
+de creacion y consulta sobre las estructuras de datos.
 """
+
+# -----------------------------------------------------
+#                       API
+# -----------------------------------------------------
+
+def newAnalyzer():
+    """ Inicializa el analizador
+
+   stops: Tabla de hash para guardar los vertices del grafo
+   connections: Grafo para representar las rutas entre estaciones
+   components: Almacena la informacion de los componentes conectados
+   paths: Estructura que almancena los caminos de costo minimo desde un
+           vertice determinado a todos los otros vértices del grafo
+    """
+    try:
+        analyzer = {
+                    'landing_points': None,
+                    'connections': None,
+                    }
+
+        analyzer['landing_points'] = mp.newMap(numelements=1400,
+                                     maptype='PROBING')
+
+        analyzer['connections'] = gr.newGraph(datastructure='ADJ_LIST',
+                                              directed=False,
+                                              size=14000,
+                                              comparefunction=cmplandingpoints)
+
+        return analyzer
+    except Exception as exp:
+        error.reraise(exp, 'model:newAnalyzer')
 
 # Construccion de modelos
 
@@ -48,3 +81,17 @@ los mismos.
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 # Funciones de ordenamiento
+
+# Funciones de comparación
+
+def cmplandingpoints(landing_points, keyvalue):
+    """
+    Compara dos landing points
+    """
+    code = keyvalue['key']
+    if (landing_points == code):
+        return 0
+    elif (landing_points > code):
+        return 1
+    else:
+        return -1
