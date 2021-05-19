@@ -43,13 +43,14 @@ def printMenu():
     print('\n')
     print("✨💕🌈 Bienvenido 🌈💕✨")
     print("__________________________________________\n")
-    print("1️⃣ Inicializar Analizador 🤔💭🧮")
-    print("2️⃣ Cargar información 🤑📈🔥")
+    print("1️⃣ - Inicializar Analizador 🤔💭🧮")
+    print("2️⃣ - Cargar información 🤑📈🔥")
 
 
 def optionTwo(analyzer):
-    print("\nCargando información...")
+    print("\nCargando información... 🦋💟✨🧚🧃🌈🐸⭐🩹🧷")
     controller.loadLandingPoints(analyzer, landing_points)
+    controller.loadConnections(analyzer, connections)
     print('\n')
 
 """
@@ -58,7 +59,7 @@ Menu principal
 while True:
     printMenu()
     print("Ingrese una opción para continuar: 💯🤠")
-    inputs = input('🤡')
+    inputs = input('~')
     
     if int(inputs[0]) == 1:
         print("\nInicializando....")
@@ -68,13 +69,9 @@ while True:
     elif int(inputs[0]) == 2:
         optionTwo(analyzer)
 
-    elif int(inputs[0]) == 2:
-        pass
-
     else:
         sys.exit(0)
 sys.exit(0)
-
 
 
 if __name__ == "__main__":

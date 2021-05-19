@@ -237,7 +237,7 @@ def keySet(map):
         Exception
     """
     try:
-        ltset = lt.newList()
+        ltset = lt.newList('ARRAY_LIST')
         for pos in range(lt.size(map['table'])):
             entry = lt.getElement(map['table'], pos+1)
             if (entry['key'] is not None and entry['key'] != '__EMPTY__'):

@@ -29,8 +29,7 @@ import config
 from DISClib.ADT.graph import gr
 from DISClib.ADT import map as mp
 from DISClib.ADT import list as lt
-from DISClib.Algorithms.Graphs import scc
-from DISClib.Algorithms.Graphs import dijsktra as djk
+from DISClib.Algorithms.Sorting import quicksort as qs
 from DISClib.Utils import error as error
 assert config
 
@@ -70,19 +69,75 @@ def newAnalyzer():
     except Exception as exp:
         error.reraise(exp, 'model:newAnalyzer')
 
-# Construccion de modelos
 
-# Funciones para agregar informacion al catalogo
+def cleanLength(connection):
+    """
+    En el caso en el que la distancia sea n.a.
+    se reemplaza por cero
+    """
+    if connection['cable_length'] == 'n.a.':
+        pass
+        # Santiago dice que le pongamos un valor arbitrario
 
-# Funciones para creacion de datos
 
-# Funciones de consulta
+def formatVertex(connection):
+    """
+    Los vértices estarán formateados de la
+    siguiente manera: <LandingPoint>-<Cable>
+    """
+    origin = connection['\ufefforigin'] + '-' + connection['cable_name']
+    destination = connection['destination'] + '-' + connection['cable_name']
+    return origin, destination
 
-# Funciones utilizadas para comparar elementos dentro de una lista
 
-# Funciones de ordenamiento
+def addConnection(analyzer, connection):
+    vertexes = formatVertex(connection)
+    if connection['cable_length'] != 'n.a.':
+        for i in vertexes:
+            gr.insertVertex(analyzer['connections'], i)
+        weight = connection['cable_length']
+        weight = weight.split(' ')[0]
+        if ',' in weight:
+            weight = weight.split(",")
+            weight = int(weight[0]*1000)+int(weight[1])
+        else:
+            weight = int(weight)
+        gr.addEdge(
+            analyzer['connections'], vertexes[0], vertexes[1],
+            weight)
 
-# Funciones de comparación
+
+def relateSameLandings(graph):
+    vertexes_list = gr.vertices(graph)
+    ordered = sortVertexes(vertexes_list)
+    i = 1
+    # TODO Arreglar esto
+    while i <= (lt.size(ordered)-1):
+        main = lt.getElement(ordered, i)
+        main_no = main.split("-")[0]
+        nextu = lt.getElement(ordered, i+1)
+        nextu_no = main.split("-")[0]
+        i += 1
+        while main_no == nextu_no:
+            lista = []
+            if main not in lista:
+                lista.append(main)
+            if nextu not in lista:
+                lista.append(nextu)
+            main = lt.getElement(ordered, i)
+            main_no = main.split("-")[0]
+            nextu = lt.getElement(ordered, i+1)
+            nextu_no = main.split("-")[0]
+            i += 1
+        relateSameVertexes(lista, graph)
+
+
+def relateSameVertexes(lista, graph):
+    for i in lista:
+        for j in lista:
+            if j > i:
+                gr.addEdge(graph, i, j, 100)
+
 
 def cmplandingpoints(landing_points, keyvalue):
     """
@@ -95,3 +150,12 @@ def cmplandingpoints(landing_points, keyvalue):
         return 1
     else:
         return -1
+
+
+def sortVertexes(list):
+    sorted_list = qs.sort(list, cmpVertexByNumber)
+    return sorted_list
+
+
+def cmpVertexByNumber(vertexa, vertexb):
+    return vertexa > vertexb

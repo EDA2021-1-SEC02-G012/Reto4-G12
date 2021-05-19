@@ -51,14 +51,39 @@ def init():
 
 # Funciones para la carga de datos
 
+
 def loadLandingPoints(analyzer, filename):
     """.DS_Store"""
     landingFile = cf.data_dir + filename
     input_file = csv.DictReader(open(landingFile, encoding="utf-8"),
                                 delimiter=",")
-    
     for i in input_file:
         mp.put(analyzer['landing_points'], i['landing_point_id'], i)
+
+
+def loadConnections(analyzer, filename):
+    """
+    Agrega los arcos del grafo, iterando sobre
+    cada vértice
+    """
+    landingFile = cf.data_dir + filename
+    input_file = csv.DictReader(open(landingFile, encoding="utf-8"),
+                                delimiter=",")
+    last = None
+    n = 0
+    for i in input_file:
+        if last is not None:
+            a1 = (last['\ufefforigin'] == i['destination'])
+            a2 = (last['destination'] == i['\ufefforigin'])
+            sameVertexes = a1 and a2
+            if sameVertexes:
+                model.addConnection(analyzer, i)
+                n += 1
+                if n == 100:
+                    break
+        last = i
+    model.relateSameLandings(analyzer['connections'])
+    return None
 
 # Funciones de ordenamiento
 
