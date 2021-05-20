@@ -20,11 +20,11 @@
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
 
-import config as cf
 import sys
-import controller
-from DISClib.ADT import list as lt
-assert cf
+import config
+import threading
+from App import controller
+assert config
 
 
 """
@@ -53,25 +53,28 @@ def optionTwo(analyzer):
     controller.loadConnections(analyzer, connections)
     print('\n')
 
+
 """
 Menu principal
 """
-while True:
-    printMenu()
-    print("Ingrese una opción para continuar: 💯🤠")
-    inputs = input('~')
-    
-    if int(inputs[0]) == 1:
-        print("\nInicializando....")
-        # cont es el analyzer que se usará de acá en adelante
-        analyzer = controller.init()
-        
-    elif int(inputs[0]) == 2:
-        optionTwo(analyzer)
 
-    else:
-        sys.exit(0)
-sys.exit(0)
+
+def thread_cycle():
+    while True:
+        printMenu()
+        print("Ingrese una opción para continuar: 💯🤠")
+        inputs = input('~')
+
+        if int(inputs[0]) == 1:
+            print("\nInicializando....")
+            analyzer = controller.init()
+
+        elif int(inputs[0]) == 2:
+            optionTwo(analyzer)
+
+        else:
+            sys.exit(0)
+    sys.exit(0)
 
 
 if __name__ == "__main__":

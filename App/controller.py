@@ -24,7 +24,6 @@
 import config as cf
 from App import model
 from DISClib.ADT import map as mp
-import time
 import csv
 
 
@@ -78,11 +77,12 @@ def loadConnections(analyzer, filename):
             sameVertexes = a1 and a2
             if sameVertexes:
                 model.addConnection(analyzer, i)
+                model.addConnectionToLanding(i, analyzer)
                 n += 1
                 if n == 100:
                     break
         last = i
-    model.relateSameLandings(analyzer['connections'])
+    model.relateSameLandings(analyzer)
     return None
 
 # Funciones de ordenamiento

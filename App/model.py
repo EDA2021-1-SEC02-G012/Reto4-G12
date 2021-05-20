@@ -30,6 +30,7 @@ from DISClib.ADT.graph import gr
 from DISClib.ADT import map as mp
 from DISClib.ADT import list as lt
 from DISClib.Algorithms.Sorting import quicksort as qs
+from DISClib.DataStructures import mapentry as me
 from DISClib.Utils import error as error
 assert config
 
@@ -41,6 +42,7 @@ de creacion y consulta sobre las estructuras de datos.
 # -----------------------------------------------------
 #                       API
 # -----------------------------------------------------
+
 
 def newAnalyzer():
     """ Inicializa el analizador
@@ -54,11 +56,17 @@ def newAnalyzer():
     try:
         analyzer = {
                     'landing_points': None,
+                    'landing_connections': None,
                     'connections': None,
                     }
 
-        analyzer['landing_points'] = mp.newMap(numelements=1400,
-                                     maptype='PROBING')
+        analyzer['landing_points'] = mp.newMap(
+            numelements=1400,
+            maptype='PROBING')
+
+        analyzer['landing_connections'] = mp.newMap(
+            numelements=1400,
+            maptype='PROBING')
 
         analyzer['connections'] = gr.newGraph(datastructure='ADJ_LIST',
                                               directed=False,
@@ -107,16 +115,73 @@ def addConnection(analyzer, connection):
             weight)
 
 
-def relateSameLandings(graph):
+def addSantiConnection(analyzer, origin, destination, distance):
+    """
+    Adiciona un arco entre dos estaciones
+    """
+    edge = gr.getEdge(analyzer['connections'], origin, destination)
+    if edge is None:
+        gr.addEdge(analyzer['connections'], origin, destination, distance)
+    return analyzer
+
+
+def addConnectionToLanding(cable, analyzer):
+    """
+    La función de addConnectionToLanding() adiciona el video al
+    mapa de landing points.
+    Args:
+        analyzer: Analizador
+    """
+    selected_map = analyzer['landing_connections']
+    entry = mp.get(selected_map, cable['\ufefforigin'])
+    if mp.contains(selected_map, cable['\ufefforigin']):
+        value = me.getValue(entry)
+    else:
+        value = newDataEntry()
+    lt.addLast(value['cables'], cable['cable_name'])
+    mp.put(selected_map, cable['\ufefforigin'], value)
+
+
+def newDataEntry():
+    '''
+    Crea un bucket para guardar todos los eventos dentro de
+    la categoría
+    '''
+    entry = {'cables': None}
+    entry['cables'] = lt.newList('ARRAY_LIST')
+    return entry
+
+
+def relateSameLandings(analyzer):
+    """
+    Por cada vertice (cada estacion) se recorre la lista
+    de rutas servidas en dicha estación y se crean
+    arcos entre ellas para representar el cambio de ruta
+    que se puede realizar en una estación.
+    """
+    lststops = mp.keySet(analyzer['landing_connections'])
+    for key in lt.iterator(lststops):
+        lstroutes = mp.get(
+            analyzer['landing_connections'], key)['value']['cables']
+        prevrout = None
+        for route in lt.iterator(lstroutes):
+            route = key + '-' + route
+            if prevrout is not None:
+                addSantiConnection(analyzer, prevrout, route, 100)
+                addSantiConnection(analyzer, route, prevrout, 100)
+            prevrout = route
+
+
+def relateSameLandings1(graph):
     vertexes_list = gr.vertices(graph)
     ordered = sortVertexes(vertexes_list)
     i = 1
     # TODO Arreglar esto
-    while i <= (lt.size(ordered)-1):
+    while i <= (lt.size(ordered)-2):
         main = lt.getElement(ordered, i)
         main_no = main.split("-")[0]
         nextu = lt.getElement(ordered, i+1)
-        nextu_no = main.split("-")[0]
+        nextu_no = nextu.split("-")[0]
         i += 1
         while main_no == nextu_no:
             lista = []
