@@ -23,6 +23,7 @@
 import sys
 import config
 import threading
+from Data import emojis
 from App import controller
 assert config
 
@@ -41,14 +42,14 @@ landing_points = 'landing_points.csv'
 
 def printMenu():
     print('\n')
-    print("✨💕🌈 Bienvenido 🌈💕✨")
+    print("✨ Bienvenido ✨")
     print("__________________________________________\n")
-    print("1️⃣ - Inicializar Analizador 🤔💭🧮")
-    print("2️⃣ - Cargar información 🤑📈🔥")
+    print("1️⃣ - Inicializar Analizador" + emojis.random_emoji(2))
+    print("2️⃣ - Cargar información" + emojis.random_emoji(2))
 
 
 def optionTwo(analyzer):
-    print("\nCargando información... 🦋💟✨🧚🧃🌈🐸⭐🩹🧷")
+    print("\nCargando información... " + emojis.random_emoji(4))
     controller.loadLandingPoints(analyzer, landing_points)
     controller.loadConnections(analyzer, connections)
     print('\n')
@@ -62,7 +63,7 @@ Menu principal
 def thread_cycle():
     while True:
         printMenu()
-        print("Ingrese una opción para continuar: 💯🤠")
+        print("Ingrese una opción para continuar:")
         inputs = input('~')
 
         if int(inputs[0]) == 1:

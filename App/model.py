@@ -70,7 +70,7 @@ def newAnalyzer():
 
         analyzer['connections'] = gr.newGraph(datastructure='ADJ_LIST',
                                               directed=False,
-                                              size=14000,
+                                              size=200,
                                               comparefunction=cmplandingpoints)
 
         return analyzer
@@ -107,12 +107,14 @@ def addConnection(analyzer, connection):
         weight = weight.split(' ')[0]
         if ',' in weight:
             weight = weight.split(",")
-            weight = int(weight[0]*1000)+int(weight[1])
+            weight = int(weight[0])*1000+int(weight[1])
         else:
             weight = int(weight)
-        gr.addEdge(
-            analyzer['connections'], vertexes[0], vertexes[1],
-            weight)
+        exists = gr.getEdge(analyzer['connections'], vertexes[0], vertexes[1])
+        if exists is None:
+            gr.addEdge(
+                analyzer['connections'], vertexes[0], vertexes[1],
+                weight)
 
 
 def addSantiConnection(analyzer, origin, destination, distance):

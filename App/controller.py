@@ -83,7 +83,7 @@ def loadConnections(analyzer, filename):
                     break
         last = i
     model.relateSameLandings(analyzer)
-    return None
+    return ':)'
 
 # Funciones de ordenamiento
 
