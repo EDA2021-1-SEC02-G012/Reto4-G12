@@ -31,6 +31,7 @@ from DISClib.ADT import map as mp
 from DISClib.ADT import list as lt
 from DISClib.Algorithms.Sorting import quicksort as qs
 from DISClib.Algorithms.Graphs import scc
+from DISClib.Algorithms.Graphs import dijsktra
 from DISClib.DataStructures import mapentry as me
 from DISClib.Utils import error as error
 from Data import haversine
@@ -261,3 +262,11 @@ def Kosaraju(graph):
 
 def arestronglyConnected(scc, vertexA, vertexB):
     return scc.stronglyConnected(scc, vertexA, vertexB)
+
+
+def Dijkstra(graph, paisA):
+    return dijsktra.Dijkstra(graph, paisA)
+
+
+def findDistTo(caminominimo, paisB):
+    return dijsktra.distTo(caminominimo, paisB)

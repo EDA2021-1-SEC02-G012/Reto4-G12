@@ -116,3 +116,9 @@ def req1(graph, vertexA, vertexB):
     tree = model.Kosaraju(graph)
     path = model.arestronglyConnected(tree, vertexA, vertexB)
     return path
+
+
+def req3(analyzer, paisA, paisB):
+    caminominimo = model.Dijsktra(analyzer, paisA)
+    path = model.findDistTo(caminominimo, paisB)
+    return path
