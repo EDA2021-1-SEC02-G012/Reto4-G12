@@ -72,8 +72,8 @@ def optionThree(analyzer):
     decir si dos vértices están conectados
     '''
     graph = analyzer['connections']
-    vertexA = input('Ingrese el vértice de origen')
-    vertexB = input('Ingrese el vértice destino')
+    vertexA = input('Ingrese el vértice de origen: ')
+    vertexB = input('Ingrese el vértice destino: ')
     print(controller.req1(graph, vertexA, vertexB))
 
 
@@ -88,12 +88,14 @@ def optionFour(analyzer):
     print()
 
 
-def optionFive():
-    # TODO
+def optionFive(analyzer):
+    # TODO Poner capital connection vertex
     """VertexA, VertexB
     Ruta mínima en distancia,
     Fórmula Haversine con una librería"""
-    pass
+    paisA = input('Ingrese el país origen: ')
+    paisB = input('Ingrese el país destino: ')
+    print(controller.req3(analyzer, paisA, paisB))
 
 
 def optionSix():
@@ -126,9 +128,12 @@ def thread_cycle():
 
         elif int(inputs[0]) == 3:
             optionThree(analyzer)
-        
+
         elif int(inputs[0]) == 4:
             optionFour(analyzer)
+
+        elif int(inputs[0]) == 5:
+            optionFive(analyzer)
 
         else:
             sys.exit(0)
