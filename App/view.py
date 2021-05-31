@@ -46,6 +46,12 @@ def printMenu():
     print("__________________________________________\n")
     print("1️⃣ - Inicializar Analizador" + emojis.random_emoji(2))
     print("2️⃣ - Cargar información" + emojis.random_emoji(2))
+    print(
+        "3️⃣ - Dados dos vértices, decir si son fuertemente conectados"
+        + emojis.random_emoji(2))
+    print(
+        "4️⃣ - Encontrar el vértice con mayor grado"
+        + emojis.random_emoji(2))
 
 
 def optionTwo(analyzer):
@@ -58,25 +64,28 @@ def optionTwo(analyzer):
     print('Se ha cargado la información exitosamente.')
 
 
-def optionThree():
-    # TODO
+def optionThree(analyzer):
+    #  No nos funciona unu
     '''
     VertexA, VertexB
     Encontrar clústeres: Kosaraju,
     decir si dos vértices están conectados
     '''
-    pass
+    graph = analyzer['connections']
+    vertexA = input('Ingrese el vértice de origen')
+    vertexB = input('Ingrese el vértice destino')
+    print(controller.req1(graph, vertexA, vertexB))
 
 
-def optionFour():
-    # TODO
+def optionFour(analyzer):
+    #  Con qué lo hacemos? Grafo? Mapa? Hotel??? Trivago????? unu
     '''
     Landing point que sirve de interconexión a
     más arcos: TAD graph: Encontrar vérice con
     mayor grado
     Puede haber más de uno
     '''
-    pass
+    print()
 
 
 def optionFive():
@@ -114,6 +123,12 @@ def thread_cycle():
 
         elif int(inputs[0]) == 2:
             optionTwo(analyzer)
+
+        elif int(inputs[0]) == 3:
+            optionThree(analyzer)
+        
+        elif int(inputs[0]) == 4:
+            optionFour(analyzer)
 
         else:
             sys.exit(0)

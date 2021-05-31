@@ -105,9 +105,14 @@ def addLandingPoints(analyzer, file):
     input_file = csv.DictReader(open(landingFile, encoding="utf-8"),
                                 delimiter=",")
     for i in input_file:
-        name = i['name'].split(', ')[-1]
-        mp.put(analyzer['landing_points2'], name, i)
+        model.addConnectionToLandingMapVer3(i, analyzer['landing_points2'])
 
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
+
+
+def req1(graph, vertexA, vertexB):
+    tree = model.Kosaraju(graph)
+    path = model.arestronglyConnected(tree, vertexA, vertexB)
+    return path
