@@ -24,6 +24,7 @@
 import config as cf
 from App import model
 from DISClib.ADT import map as mp
+from DISClib.ADT import list as lt
 import csv
 
 
@@ -57,7 +58,7 @@ def loadLandingPoints(analyzer, filename):
     input_file = csv.DictReader(open(landingFile, encoding="utf-8"),
                                 delimiter=",")
     for i in input_file:
-        mp.put(analyzer['landing_points'], i['landing_point_id'], i)
+        lt.addLast(analyzer['landing_points'], i)
 
 
 def loadConnections(analyzer, filename):
@@ -69,7 +70,6 @@ def loadConnections(analyzer, filename):
     input_file = csv.DictReader(open(landingFile, encoding="utf-8"),
                                 delimiter=",")
     last = None
-    n = 0
     for i in input_file:
         if last is not None:
             a1 = (last['\ufefforigin'] == i['destination'])
@@ -77,13 +77,36 @@ def loadConnections(analyzer, filename):
             sameVertexes = a1 and a2
             if sameVertexes:
                 model.addConnection(analyzer, i)
-                model.addConnectionToLanding(i, analyzer)
-                n += 1
-                if n == 100:
-                    break
+                model.addConnectionToLandingMap(i, analyzer)
         last = i
+    model.addGroundConnections(analyzer)
     model.relateSameLandings(analyzer)
     return ':)'
+
+
+def addCountries(analyzer, file):
+    landingFile = cf.data_dir + file
+    input_file = csv.DictReader(open(landingFile, encoding="utf-8"),
+                                delimiter=",")
+    for i in input_file:
+        lt.addLast(analyzer['countries'], i)
+
+
+def addCountries2(analyzer, file):
+    landingFile = cf.data_dir + file
+    input_file = csv.DictReader(open(landingFile, encoding="utf-8"),
+                                delimiter=",")
+    for i in input_file:
+        mp.put(analyzer['countries2'], i['CountryName'], i)
+
+
+def addLandingPoints(analyzer, file):
+    landingFile = cf.data_dir + file
+    input_file = csv.DictReader(open(landingFile, encoding="utf-8"),
+                                delimiter=",")
+    for i in input_file:
+        name = i['name'].split(', ')[-1]
+        mp.put(analyzer['landing_points2'], name, i)
 
 # Funciones de ordenamiento
 

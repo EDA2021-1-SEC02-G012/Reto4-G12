@@ -32,6 +32,7 @@ from DISClib.ADT import list as lt
 from DISClib.Algorithms.Sorting import quicksort as qs
 from DISClib.DataStructures import mapentry as me
 from DISClib.Utils import error as error
+from Data import haversine
 assert config
 
 """
@@ -45,33 +46,39 @@ de creacion y consulta sobre las estructuras de datos.
 
 
 def newAnalyzer():
-    """ Inicializa el analizador
-
-   stops: Tabla de hash para guardar los vertices del grafo
-   connections: Grafo para representar las rutas entre estaciones
-   components: Almacena la informacion de los componentes conectados
-   paths: Estructura que almancena los caminos de costo minimo desde un
-           vertice determinado a todos los otros vértices del grafo
+    """
+    Inicializa el analizador
     """
     try:
         analyzer = {
                     'landing_points': None,
                     'landing_connections': None,
                     'connections': None,
+                    'countries': None,
+                    'countries2': None,
+                    'landing_points2': None
                     }
 
-        analyzer['landing_points'] = mp.newMap(
-            numelements=1400,
-            maptype='PROBING')
+        analyzer['landing_points'] = lt.newList('ARRAY_LIST')
 
         analyzer['landing_connections'] = mp.newMap(
             numelements=1400,
             maptype='PROBING')
 
+        analyzer['countries'] = lt.newList('ARRAY_LIST')
+
         analyzer['connections'] = gr.newGraph(datastructure='ADJ_LIST',
                                               directed=False,
                                               size=200,
                                               comparefunction=cmplandingpoints)
+
+        analyzer['countries2'] = mp.newMap(
+            numelements=1400,
+            maptype='PROBING')
+
+        analyzer['landing_points2'] = mp.newMap(
+            numelements=1400,
+            maptype='PROBING')
 
         return analyzer
     except Exception as exp:
@@ -84,8 +91,7 @@ def cleanLength(connection):
     se reemplaza por cero
     """
     if connection['cable_length'] == 'n.a.':
-        pass
-        # Santiago dice que le pongamos un valor arbitrario
+        connection['cable_length'] = '10000 km'
 
 
 def formatVertex(connection):
@@ -99,22 +105,22 @@ def formatVertex(connection):
 
 
 def addConnection(analyzer, connection):
+    cleanLength(connection)
     vertexes = formatVertex(connection)
-    if connection['cable_length'] != 'n.a.':
-        for i in vertexes:
-            gr.insertVertex(analyzer['connections'], i)
-        weight = connection['cable_length']
-        weight = weight.split(' ')[0]
-        if ',' in weight:
-            weight = weight.split(",")
-            weight = int(weight[0])*1000+int(weight[1])
-        else:
-            weight = int(weight)
-        exists = gr.getEdge(analyzer['connections'], vertexes[0], vertexes[1])
-        if exists is None:
-            gr.addEdge(
-                analyzer['connections'], vertexes[0], vertexes[1],
-                weight)
+    for i in vertexes:
+        gr.insertVertex(analyzer['connections'], i)
+    weight = connection['cable_length']
+    weight = weight.split(' ')[0]
+    if ',' in weight:
+        weight = weight.split(",")
+        weight = float(weight[0])*1000+float(weight[1])
+    else:
+        weight = float(weight)
+    exists = gr.getEdge(analyzer['connections'], vertexes[0], vertexes[1])
+    if exists is None:
+        gr.addEdge(
+            analyzer['connections'], vertexes[0], vertexes[1],
+            weight)
 
 
 def addSantiConnection(analyzer, origin, destination, distance):
@@ -127,10 +133,8 @@ def addSantiConnection(analyzer, origin, destination, distance):
     return analyzer
 
 
-def addConnectionToLanding(cable, analyzer):
+def addConnectionToLandingMap(cable, analyzer):
     """
-    La función de addConnectionToLanding() adiciona el video al
-    mapa de landing points.
     Args:
         analyzer: Analizador
     """
@@ -142,6 +146,97 @@ def addConnectionToLanding(cable, analyzer):
         value = newDataEntry()
     lt.addLast(value['cables'], cable['cable_name'])
     mp.put(selected_map, cable['\ufefforigin'], value)
+
+
+def addConnectionToLandingMapVer2(vertex, cable, analyzer):
+    selected_map = analyzer['landing_connections']
+    entry = mp.get(selected_map, vertex)
+    if mp.contains(selected_map, vertex):
+        value = me.getValue(entry)
+    else:
+        value = newDataEntry()
+    lt.addLast(value['cables'], cable)
+    mp.put(selected_map, vertex, value)
+
+
+def addGroundConnections(analyzer):
+    """Agrega las conexiones por tierra"""
+    index = 2000
+    prefix = "Capital Connection "
+    listacountries = mp.keySet(analyzer['countries2'])
+
+    for country in lt.iterator(listacountries):
+        selectcount = mp.get(analyzer['countries2'], country)
+        countri = me.getValue(selectcount)
+        cable = prefix + country
+        origin = str(index) + '-' + cable
+        gr.insertVertex(analyzer['connections'], origin)
+
+        lp = mp.get(analyzer['landing_points2'], country)
+        if lp is not None:
+            landingPoint = me.getValue(lp)
+            destination = landingPoint['landing_point_id'] + '-' + cable
+            gr.insertVertex(analyzer['connections'], destination)
+
+            dist = haversine.haversine(
+                float(countri['CapitalLatitude']),
+                float(countri['CapitalLongitude']),
+                float(landingPoint['latitude']),
+                float(landingPoint['longitude']))
+            # CreateGroundConnections(analyzer, origin, destination,,,)
+            gr.addEdge(analyzer['connections'], destination, origin, dist)
+            addConnectionToLandingMapVer2(origin, cable, analyzer)
+            addConnectionToLandingMapVer2(destination, cable, analyzer)
+            index += 1
+
+
+def addGroundConnections1(analyzer):
+    '''Agrega las conexiones por tierra'''
+    index = 20000
+    prefix = 'Capital Connections '
+
+    for country in lt.iterator(analyzer['countries']):
+        cable = prefix + country['CountryName']
+        origin = str(index) + '-' + cable
+        # addstop(analyzer, origin)
+        gr.insertVertex(analyzer['connections'], origin)
+        foundLp = False
+
+        for landingPoint in lt.iterator(analyzer['landing_points']):
+            if landingPoint['name'].split(', ')[-1] == country['CountryName']:
+                destination = landingPoint['landing_point_id'] + '-' + cable
+                dist = haversine.haversine(
+                    float(country['CapitalLatitude']),
+                    float(country['CapitalLongitude']),
+                    float(landingPoint['latitude']),
+                    float(landingPoint['longitude']))
+                # CreateGroundConnections(analyzer, origin, destination,,,)
+                gr.insertVertex(analyzer['connections'], destination)
+                gr.addEdge(analyzer['connections'], destination, origin, dist)
+                addConnectionToLandingMapVer2(origin, cable, analyzer)
+                addConnectionToLandingMapVer2(destination, cable, analyzer)
+                foundLp = True
+
+        if not foundLp:
+            closestLp = None
+            minDistance = float('inf')
+            for landingPoint in lt.iterator(analyzer['landing_points']):
+                dist = haversine.haversine(
+                    float(country['CapitalLatitude']),
+                    float(country['CapitalLongitude']),
+                    float(landingPoint['latitude']),
+                    float(landingPoint['longitude']))
+                if dist < minDistance:
+                    closestLp = landingPoint
+                    minDistance = dist
+                destination = closestLp['landing_point_id'] + '-' + cable
+                # CreateGroundConnections(analyzer, origin, destination,,,)
+                gr.insertVertex(analyzer['connections'], destination)
+                gr.addEdge(analyzer['connections'], destination, origin, dist)
+                addConnectionToLandingMapVer2(origin, cable, analyzer)
+                addConnectionToLandingMapVer2(destination, cable, analyzer)
+
+        index += 1
 
 
 def newDataEntry():
@@ -172,31 +267,6 @@ def relateSameLandings(analyzer):
                 addSantiConnection(analyzer, prevrout, route, 100)
                 addSantiConnection(analyzer, route, prevrout, 100)
             prevrout = route
-
-
-def relateSameLandings1(graph):
-    vertexes_list = gr.vertices(graph)
-    ordered = sortVertexes(vertexes_list)
-    i = 1
-    # TODO Arreglar esto
-    while i <= (lt.size(ordered)-2):
-        main = lt.getElement(ordered, i)
-        main_no = main.split("-")[0]
-        nextu = lt.getElement(ordered, i+1)
-        nextu_no = nextu.split("-")[0]
-        i += 1
-        while main_no == nextu_no:
-            lista = []
-            if main not in lista:
-                lista.append(main)
-            if nextu not in lista:
-                lista.append(nextu)
-            main = lt.getElement(ordered, i)
-            main_no = main.split("-")[0]
-            nextu = lt.getElement(ordered, i+1)
-            nextu_no = main.split("-")[0]
-            i += 1
-        relateSameVertexes(lista, graph)
 
 
 def relateSameVertexes(lista, graph):

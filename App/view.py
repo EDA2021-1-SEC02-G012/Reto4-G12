@@ -51,8 +51,50 @@ def printMenu():
 def optionTwo(analyzer):
     print("\nCargando información... " + emojis.random_emoji(4))
     controller.loadLandingPoints(analyzer, landing_points)
+    controller.addCountries(analyzer, countries)
+    controller.addCountries2(analyzer, countries)
+    controller.addLandingPoints(analyzer, landing_points)
     controller.loadConnections(analyzer, connections)
-    print('\n')
+    print('Se ha cargado la información exitosamente.')
+
+
+def optionThree():
+    # TODO
+    '''
+    VertexA, VertexB
+    Encontrar clústeres: Kosaraju,
+    decir si dos vértices están conectados
+    '''
+    pass
+
+
+def optionFour():
+    # TODO
+    '''
+    Landing point que sirve de interconexión a
+    más arcos: TAD graph: Encontrar vérice con
+    mayor grado
+    Puede haber más de uno
+    '''
+    pass
+
+
+def optionFive():
+    # TODO
+    """VertexA, VertexB
+    Ruta mínima en distancia,
+    Fórmula Haversine con una librería"""
+    pass
+
+
+def optionSix():
+    """MST"""
+    pass
+
+
+def optionSeven():
+    """___"""
+    pass
 
 
 """
