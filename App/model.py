@@ -26,7 +26,7 @@
 
 
 import config
-from DISClib.ADT.graph import adjacents, gr
+from DISClib.ADT.graph import gr
 from DISClib.ADT import map as mp
 from DISClib.ADT import list as lt
 from DISClib.Algorithms.Sorting import quicksort as qs
@@ -315,15 +315,27 @@ def findMST(graph):
     return mst
 
 
-
-
-def findCountriesFromAdjacents(graph, landingPoint): 
+def findCountriesFromAdjacents(graph, landingPoint):
+    # Esto no funciona
     list_adjacents = gr.adjacents(graph, landingPoint)
     countries = []
-    for vertex in lt.iterator(list_adjacents): 
+    for vertex in lt.iterator(list_adjacents):
         adjacents_vertex = gr.adjacents(graph, vertex)
         for adjacent in lt.iterator(adjacents_vertex):
-            if "Capital" in adjacent: 
+            if 'Capital' in adjacent:
                 countries.append(adjacent)
-    return countries
+            if landingPoint in adjacent:
+                otra_variable = gr.adjacents(graph, adjacent)
+                for otro_adjacente in lt.iterator(otra_variable):
+                    otro_adjacente2 = gr.adjacents(graph, otro_adjacente)
+                    if 'Capital' in otro_adjacente:
+                        countries.append(otro_adjacente)
+                        for auxilio in lt.iterator(otro_adjacente2):
+                            otro_adjacente_3 = gr.adjacents(graph, auxilio)
+                            if 'Capital' in auxilio:
+                                countries.append(auxilio)
+                            for each_auxilio in lt.iterator(otro_adjacente_3):
+                                if 'Capital' in each_auxilio:
+                                    countries.append(each_auxilio)
 
+    return countries
