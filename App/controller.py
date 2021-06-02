@@ -145,5 +145,4 @@ def req4(graph):
 
 
 def req5(analyzer, landing_point):
-    adj = model.findAdjacentLandingPoints
-    return adj
+    return model.findCountriesFromAdjacents(analyzer['connections'], landing_point)

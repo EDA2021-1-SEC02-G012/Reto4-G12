@@ -123,9 +123,9 @@ def optionSix(analyzer):
 def optionSeven(analyzer):
     """Impacto que tendría el fallo de un LP"""
     LP = input('Ingrese el landing point que falló: ')
-    landingPoint = controller.searchCountry(LP, analyzer)
-    controller.req5(analyzer, landingPoint)
-    pass
+    landingPoint = controller.searchCountry(LP.lower(), analyzer)
+    print(controller.req5(analyzer, landingPoint))
+
 
 
 """
