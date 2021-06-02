@@ -58,7 +58,9 @@ def loadLandingPoints(analyzer, filename):
     input_file = csv.DictReader(open(landingFile, encoding="utf-8"),
                                 delimiter=",")
     for i in input_file:
-        lt.addLast(analyzer['landing_points'], i)
+        name = i['name'].split(', ')[0]
+        name = name.lower()
+        mp.put(analyzer['landing_points'], name, i['landing_point_id'])
 
 
 def loadConnections(analyzer, filename):
@@ -109,16 +111,39 @@ def addLandingPoints(analyzer, file):
 
 # Funciones de ordenamiento
 
+
+def searchCountry(name, analyzer):
+    return model.searchCountry(name, analyzer)
+
+
+def searchVertexCountry(pais, analyzer):
+    return model.searchVertexCountry(pais, analyzer)
+
 # Funciones de consulta sobre el catálogo
 
 
 def req1(graph, vertexA, vertexB):
-    tree = model.Kosaraju(graph)
-    path = model.arestronglyConnected(tree, vertexA, vertexB)
-    return path
+    if (vertexA is not None) and (vertexB is not None):
+        tree = model.Kosaraju(graph)
+        path = model.arestronglyConnected(tree, vertexA, vertexB)
+        return path
+    else:
+        return "Error en los vértices"
 
 
-def req3(analyzer, paisA, paisB):
-    caminominimo = model.Dijsktra(analyzer, paisA)
-    path = model.findDistTo(caminominimo, paisB)
-    return path
+def req3(analyzer, vertexA, vertexB):
+    if (vertexA is not None) and (vertexB is not None):
+        caminominimo = model.DijsktraAlgo(analyzer['connections'], vertexA)
+        path = model.findDistTo(caminominimo, vertexB)
+        return path
+    else:
+        return "Error en los vértices"
+
+
+def req4(graph):
+    return model.findMST(graph)
+
+
+def req5(analyzer, landing_point):
+    adj = model.findAdjacentLandingPoints
+    return adj

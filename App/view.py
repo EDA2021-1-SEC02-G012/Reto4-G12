@@ -52,6 +52,12 @@ def printMenu():
     print(
         "4️⃣ - Encontrar el vértice con mayor grado"
         + emojis.random_emoji(2))
+    print(
+        "5️⃣ - Encontrar ruta mínima entre dos países"
+        + emojis.random_emoji(2))
+    print(
+        "6️⃣ - Encontrar la red de expansión mínima"
+        + emojis.random_emoji(2))
 
 
 def optionTwo(analyzer):
@@ -73,8 +79,12 @@ def optionThree(analyzer):
     '''
     graph = analyzer['connections']
     vertexA = input('Ingrese el vértice de origen: ')
+    vertexA = vertexA.lower()
+    vertexA_cod = controller.searchCountry(vertexA, analyzer)
     vertexB = input('Ingrese el vértice destino: ')
-    print(controller.req1(graph, vertexA, vertexB))
+    vertexB = vertexB.lower()
+    vertexB_cod = controller.searchCountry(vertexB, analyzer)
+    print(controller.req1(graph, vertexA_cod, vertexB_cod))
 
 
 def optionFour(analyzer):
@@ -93,18 +103,28 @@ def optionFive(analyzer):
     """VertexA, VertexB
     Ruta mínima en distancia,
     Fórmula Haversine con una librería"""
+    print(
+        "\nADVERTENCIA: La distancia se encontrará entre las capitales de",
+        "los países que seleccione." + emojis.random_emoji(1))
     paisA = input('Ingrese el país origen: ')
+    paisA = paisA.lower()
+    vertexA = controller.searchVertexCountry(paisA, analyzer)
     paisB = input('Ingrese el país destino: ')
-    print(controller.req3(analyzer, paisA, paisB))
+    paisB = paisB.lower()
+    vertexB = controller.searchVertexCountry(paisB, analyzer)
+    print(controller.req3(analyzer, vertexA, vertexB))
 
 
-def optionSix():
-    """MST"""
-    pass
+def optionSix(analyzer):
+    """Red de expansión mínima: MST"""
+    print(controller.findMST(analyzer['connections']))
 
 
-def optionSeven():
-    """___"""
+def optionSeven(analyzer):
+    """Impacto que tendría el fallo de un LP"""
+    LP = input('Ingrese el landing point que falló: ')
+    landingPoint = controller.searchCountry(LP, analyzer)
+    controller.req5(analyzer, landingPoint)
     pass
 
 
@@ -134,6 +154,12 @@ def thread_cycle():
 
         elif int(inputs[0]) == 5:
             optionFive(analyzer)
+
+        elif int(inputs[0]) == 6:
+            optionSix(analyzer)
+
+        elif int(inputs[0]) == 7:
+            optionSeven(analyzer)
 
         else:
             sys.exit(0)

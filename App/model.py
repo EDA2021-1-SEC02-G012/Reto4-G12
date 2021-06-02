@@ -32,6 +32,7 @@ from DISClib.ADT import list as lt
 from DISClib.Algorithms.Sorting import quicksort as qs
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra
+from DISClib.Algorithms.Graphs import prim
 from DISClib.DataStructures import mapentry as me
 from DISClib.Utils import error as error
 from Data import haversine
@@ -58,10 +59,13 @@ def newAnalyzer():
                     'connections': None,
                     'countries': None,
                     'countries2': None,
-                    'landing_points2': None
+                    'landing_points2': None,
+                    'capitals': None
                     }
 
-        analyzer['landing_points'] = lt.newList('ARRAY_LIST')
+        analyzer['landing_points'] = mp.newMap(
+            numelements=1400,
+            maptype='PROBING')
 
         analyzer['landing_connections'] = mp.newMap(
             numelements=1400,
@@ -79,6 +83,10 @@ def newAnalyzer():
             maptype='PROBING')
 
         analyzer['landing_points2'] = mp.newMap(
+            numelements=1400,
+            maptype='PROBING')
+
+        analyzer['capitals'] = mp.newMap(
             numelements=1400,
             maptype='PROBING')
 
@@ -188,6 +196,7 @@ def addGroundConnections(analyzer):
         lp = mp.get(analyzer['landing_points2'], country)
         bool = lp is not None
         if bool:
+            mp.put(analyzer['capitals'], country.lower(), origin)
             gr.insertVertex(analyzer['connections'], origin)
             lp = me.getValue(lp)
             lp = lp['cables']
@@ -221,6 +230,7 @@ def newDataEntry():
 def relateSameLandings(analyzer):
     lststops = mp.keySet(analyzer['landing_connections'])
     for key in lt.iterator(lststops):
+        gr.insertVertex(analyzer['connections'], key)
         lstroutes = mp.get(
             analyzer['landing_connections'], key)['value']['cables']
         prevrout = None
@@ -229,6 +239,10 @@ def relateSameLandings(analyzer):
             if prevrout is not None:
                 addSantiConnection(analyzer, prevrout, route, 100)
                 addSantiConnection(analyzer, route, prevrout, 100)
+                addSantiConnection(analyzer, key, route, 100)
+                addSantiConnection(analyzer, key, prevrout, 100)
+                addSantiConnection(analyzer, prevrout, key, 100)
+                addSantiConnection(analyzer, route, key, 100)
             prevrout = route
 
 
@@ -254,19 +268,52 @@ def cmpVertexByNumber(vertexa, vertexb):
     return vertexa > vertexb
 
 
+def searchCountry(name, analyzer):
+    mapa = analyzer['landing_points']
+    keyvalue = mp.get(mapa, name)
+    if keyvalue is not None:
+        code = me.getValue(keyvalue)
+        return code
+    else:
+        return None
+
+
+def searchVertexCountry(pais, analyzer):
+    mapa = analyzer['capitals']
+    keyvalue = mp.get(mapa, pais)
+    if keyvalue is not None:
+        vertex = me.getValue(keyvalue)
+        return vertex
+    else:
+        return None
+
+
 #  FUNCIONES DE LOS REQUERIMIENTOS
 
 def Kosaraju(graph):
     return scc.KosarajuSCC(graph)
 
 
-def arestronglyConnected(scc, vertexA, vertexB):
-    return scc.stronglyConnected(scc, vertexA, vertexB)
+def arestronglyConnected(s, vertexA, vertexB):
+    return scc.stronglyConnected(s, vertexA, vertexB)
 
 
-def Dijkstra(graph, paisA):
-    return dijsktra.Dijkstra(graph, paisA)
+def DijsktraAlgo(graph, vertexA):
+    return dijsktra.Dijkstra(graph, vertexA)
 
 
-def findDistTo(caminominimo, paisB):
-    return dijsktra.distTo(caminominimo, paisB)
+def findDistTo(caminominimo, vertexB):
+    return dijsktra.pathTo(caminominimo, vertexB)
+
+
+def findMST(graph):
+    '''no.nodos
+    costo total
+    conexion mas larga
+    conexion mas corta'''
+    mst = prim.PrimMST(graph)
+    return mst
+
+
+def findAdjacentLandingPoints(graph, landingPoint):
+    return
