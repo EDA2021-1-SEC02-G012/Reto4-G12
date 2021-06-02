@@ -58,6 +58,9 @@ def printMenu():
     print(
         "6️⃣ - Encontrar la red de expansión mínima"
         + emojis.random_emoji(2))
+    print(
+        "7️⃣ - Encontrar landing points afectados"
+        + emojis.random_emoji(2))
 
 
 def optionTwo(analyzer):
@@ -117,7 +120,7 @@ def optionFive(analyzer):
 
 def optionSix(analyzer):
     """Red de expansión mínima: MST"""
-    print(controller.findMST(analyzer['connections']))
+    print(controller.req4(analyzer['connections']))
 
 
 def optionSeven(analyzer):
@@ -125,7 +128,6 @@ def optionSeven(analyzer):
     LP = input('Ingrese el landing point que falló: ')
     landingPoint = controller.searchCountry(LP.lower(), analyzer)
     print(controller.req5(analyzer, landingPoint))
-
 
 
 """
