@@ -86,12 +86,12 @@ def loadConnections(analyzer, filename):
     return ':)'
 
 
-def addCountries(analyzer, file):
+def addLandingList(analyzer, file):
     landingFile = cf.data_dir + file
     input_file = csv.DictReader(open(landingFile, encoding="utf-8"),
                                 delimiter=",")
     for i in input_file:
-        lt.addLast(analyzer['countries'], i)
+        lt.addLast(analyzer['landing_point_list'], i)
 
 
 def addCountries2(analyzer, file):

@@ -66,7 +66,7 @@ def printMenu():
 def optionTwo(analyzer):
     print("\nCargando información... " + emojis.random_emoji(4))
     controller.loadLandingPoints(analyzer, landing_points)
-    controller.addCountries(analyzer, countries)
+    controller.addLandingList(analyzer, landing_points)
     controller.addCountries2(analyzer, countries)
     controller.addLandingPoints(analyzer, landing_points)
     controller.loadConnections(analyzer, connections)
@@ -130,6 +130,24 @@ def optionSeven(analyzer):
     print(controller.req5(analyzer, landingPoint))
 
 
+def optionEight(analyzer):
+    '''Necesitamos: País, cable
+    Con el país obtenemos todos los landing points
+    Los país + cable -> Vertices que Necesitamos
+    Encontramos los adyacentes
+    Creamos un mapa llave lp valor (pais, usuarios de internet)'''
+
+
+def optionNine(analyzer):
+    '''Dada la IP encontrar el pais y luego encontrar ruta minima'''
+    pass
+
+
+def optionTen(analyzer):
+    '''Hacer el mapa :)'''
+    pass
+
+
 """
 Menu principal
 """
@@ -162,6 +180,15 @@ def thread_cycle():
 
         elif int(inputs[0]) == 7:
             optionSeven(analyzer)
+
+        elif int(inputs[0]) == 8:
+            optionEight(analyzer)
+
+        elif int(inputs[0]) == 9:
+            optionNine(analyzer)
+
+        elif int(inputs[0]) == 10:
+            optionTen(analyzer)
 
         else:
             sys.exit(0)

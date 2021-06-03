@@ -57,7 +57,7 @@ def newAnalyzer():
                     'landing_points': None,
                     'landing_connections': None,
                     'connections': None,
-                    'countries': None,
+                    'landing_point_list': None,
                     'countries2': None,
                     'landing_points2': None,
                     'capitals': None
@@ -71,7 +71,7 @@ def newAnalyzer():
             numelements=1400,
             maptype='PROBING')
 
-        analyzer['countries'] = lt.newList('ARRAY_LIST')
+        analyzer['landing_point_list'] = lt.newList('ARRAY_LIST')
 
         analyzer['connections'] = gr.newGraph(datastructure='ADJ_LIST',
                                               directed=False,
@@ -194,10 +194,10 @@ def addGroundConnections(analyzer):
         cable = prefix + country
         origin = str(index) + '-' + cable
         lp = mp.get(analyzer['landing_points2'], country)
-        bool = lp is not None
-        if bool:
+        gr.insertVertex(analyzer['connections'], origin)
+        boole = lp is not None
+        if boole:
             mp.put(analyzer['capitals'], country.lower(), origin)
-            gr.insertVertex(analyzer['connections'], origin)
             lp = me.getValue(lp)
             lp = lp['cables']
             for landingPoint in lt.iterator(lp):
@@ -213,7 +213,26 @@ def addGroundConnections(analyzer):
                 gr.addEdge(analyzer['connections'], destination, origin, dist)
                 addConnectionToLandingMapVer2(origin, cable, analyzer)
                 addConnectionToLandingMapVer2(destination, cable, analyzer)
+            index += 1
 
+        else:
+            closestLP = None
+            minDistance = 100000000
+            for landingPoint in lt.iterator(analyzer['landing_point_list']):
+                distance = haversine.haversine(
+                    float(countri['CapitalLatitude']),
+                    float(countri['CapitalLongitude']),
+                    float(landingPoint['latitude']),
+                    float(landingPoint['longitude']))
+                if distance < minDistance:
+                    closestLP = landingPoint
+                    minDistance = distance
+            destination = closestLP['landing_point_id']+'-'+cable
+            gr.insertVertex(analyzer['connections'], destination)
+            gr.addEdge(
+                analyzer['connections'], destination, origin, distance)
+            addConnectionToLandingMapVer2(origin, cable, analyzer)
+            addConnectionToLandingMapVer2(destination, cable, analyzer)
             index += 1
 
 
