@@ -24,7 +24,10 @@
  * Dario Correal - Version inicial
  """
 
-
+from requests import get
+import ipapi
+import geopandas 
+import folium 
 import config
 from DISClib.ADT.graph import gr
 from DISClib.ADT import map as mp
@@ -59,6 +62,7 @@ def newAnalyzer():
                     'connections': None,
                     'landing_point_list': None,
                     'countries2': None,
+                    'country_codes': None,
                     'landing_points2': None,
                     'capitals': None
                     }
@@ -77,6 +81,10 @@ def newAnalyzer():
                                               directed=False,
                                               size=200,
                                               comparefunction=cmplandingpoints)
+
+        analyzer['country_codes'] =  mp.newMap(
+            numelements=1400,
+            maptype='PROBING')
 
         analyzer['countries2'] = mp.newMap(
             numelements=1400,
@@ -305,6 +313,15 @@ def searchVertexCountry(pais, analyzer):
         return vertex
     else:
         return None
+
+def getLocation(ip, analyzer): 
+    loc = get('https://ipapi.co/{ip}/json/'.format(ip = ip)) 
+    info = loc.json()
+    code = info['country_code']
+    country = mp.get(analyzer['country_codes'], code)
+    country = me.getValue(country)
+    country = country.lower()
+    return country
 
 
 #  FUNCIONES DE LOS REQUERIMIENTOS

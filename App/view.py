@@ -19,10 +19,11 @@
  * You should have received a copy of the GNU General Public License
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
-
+1
 import sys
 import config
 import threading
+
 from Data import emojis
 from App import controller
 assert config
@@ -70,6 +71,7 @@ def optionTwo(analyzer):
     controller.addCountries2(analyzer, countries)
     controller.addLandingPoints(analyzer, landing_points)
     controller.loadConnections(analyzer, connections)
+    controller.loadCountrycodes(analyzer, countries)
     print('Se ha cargado la información exitosamente.')
 
 
@@ -136,7 +138,14 @@ def optionEight(analyzer):
     Los país + cable -> Vertices que Necesitamos
     Encontramos los adyacentes
     Creamos un mapa llave lp valor (pais, usuarios de internet)'''
-
+    ip_1 = input('Ingrese la IP de orígen: ')
+    location_1 = controller.getLocation(ip_1, analyzer)
+    vertexA = controller.searchVertexCountry(location_1, analyzer)
+    ip_2 = input('Ingrese la IP de destino: ')
+    location_2 = controller.getLocation(ip_2, analyzer)
+    vertexB = controller.searchVertexCountry(location_2, analyzer)
+    print(controller.req3(analyzer, vertexA, vertexB))
+    
 
 def optionNine(analyzer):
     '''Dada la IP encontrar el pais y luego encontrar ruta minima'''

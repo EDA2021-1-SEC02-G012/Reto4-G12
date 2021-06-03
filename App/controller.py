@@ -20,7 +20,6 @@
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
 
-
 import config as cf
 from App import model
 from DISClib.ADT import map as mp
@@ -101,6 +100,13 @@ def addCountries2(analyzer, file):
     for i in input_file:
         mp.put(analyzer['countries2'], i['CountryName'], i)
 
+def loadCountrycodes(analyzer, file): 
+    landingFile = cf.data_dir + file
+    input_file = csv.DictReader(open(landingFile, encoding="utf-8"),
+                                delimiter=",")
+    for i in input_file:
+        mp.put(analyzer['country_codes'], i['CountryCode'], i['CountryName'])
+
 
 def addLandingPoints(analyzer, file):
     landingFile = cf.data_dir + file
@@ -118,6 +124,9 @@ def searchCountry(name, analyzer):
 
 def searchVertexCountry(pais, analyzer):
     return model.searchVertexCountry(pais, analyzer)
+
+def getLocation(ip, analyzer): 
+    return model.getLocation(ip, analyzer)
 
 # Funciones de consulta sobre el catálogo
 
@@ -147,3 +156,5 @@ def req4(graph):
 def req5(analyzer, landing_point):
     return model.findCountriesFromAdjacents(
             analyzer['connections'], landing_point)
+
+
