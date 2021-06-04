@@ -19,7 +19,7 @@
  * You should have received a copy of the GNU General Public License
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
-1
+
 import sys
 import config
 import threading
@@ -66,6 +66,7 @@ def printMenu():
 
 def optionTwo(analyzer):
     print("\nCargando información... " + emojis.random_emoji(4))
+    controller.createMap(analyzer, landing_points)
     controller.loadLandingPoints(analyzer, landing_points)
     controller.addLandingList(analyzer, landing_points)
     controller.addCountries2(analyzer, countries)

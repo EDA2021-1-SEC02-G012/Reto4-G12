@@ -64,7 +64,9 @@ def newAnalyzer():
                     'countries2': None,
                     'country_codes': None,
                     'landing_points2': None,
-                    'capitals': None
+                    'capitals': None,
+                    'LP_lat_long': None,
+                    'Vertex_lat_long': None
                     }
 
         analyzer['landing_points'] = mp.newMap(
@@ -95,6 +97,14 @@ def newAnalyzer():
             maptype='PROBING')
 
         analyzer['capitals'] = mp.newMap(
+            numelements=1400,
+            maptype='PROBING')
+        
+        analyzer['LP_lat_long'] = mp.newMap(
+            numelements=1400,
+            maptype='PROBING')
+
+        analyzer['Vertex_lat_long'] = mp.newMap(
             numelements=1400,
             maptype='PROBING')
 

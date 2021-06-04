@@ -19,6 +19,12 @@
  * You should have received a copy of the GNU General Public License
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
+from requests import get
+import ipapi
+import geopandas 
+import folium 
+from IPython.display import HTML
+import pandas as pd 
 
 import config as cf
 from App import model
@@ -49,7 +55,23 @@ def init():
     return analyzer
 
 # Funciones para la carga de datos
+def createMap(analyzer, filename):
+    landingFile = cf.data_dir + filename
+    input_file = csv.DictReader(open(landingFile, encoding="utf-8"),
+                                delimiter=",")
+    Map = folium.Map()
+    for i in input_file:
+        LP_id = i['landing_point_id']
+        name = i['name'].split(', ')[0]
+        name = name.lower()
+        latitude = i['latitude']
+        longitude = i['longitude']
+        mp.put(analyzer['LP_lat_long'],LP_id, [latitude,longitude])
+        folium.Marker([latitude, longitude], popup= name, tooltip= 'click').add_to(Map) 
 
+    Map.save('/Users/joseluistavera/Documents/EDA/Reto4-G12/Docs/Map.html')
+
+    return Map
 
 def loadLandingPoints(analyzer, filename):
     """.DS_Store"""
@@ -156,5 +178,7 @@ def req4(graph):
 def req5(analyzer, landing_point):
     return model.findCountriesFromAdjacents(
             analyzer['connections'], landing_point)
+
+
 
 
