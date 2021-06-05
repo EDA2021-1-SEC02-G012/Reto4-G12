@@ -77,7 +77,6 @@ def optionTwo(analyzer):
 
 
 def optionThree(analyzer):
-    #  No nos funciona unu
     '''
     VertexA, VertexB
     Encontrar clústeres: Kosaraju,
@@ -94,14 +93,13 @@ def optionThree(analyzer):
 
 
 def optionFour(analyzer):
-    #  Con qué lo hacemos? Grafo? Mapa? Hotel??? Trivago????? unu
     '''
     Landing point que sirve de interconexión a
     más arcos: TAD graph: Encontrar vérice con
     mayor grado
     Puede haber más de uno
     '''
-    print()
+    print(controller.req2(analyzer))
 
 
 def optionFive(analyzer):
@@ -139,6 +137,10 @@ def optionEight(analyzer):
     Los país + cable -> Vertices que Necesitamos
     Encontramos los adyacentes
     Creamos un mapa llave lp valor (pais, usuarios de internet)'''
+
+
+def optionNine(analyzer):
+    '''Dada la IP encontrar el pais y luego encontrar ruta minima'''
     ip_1 = input('Ingrese la IP de orígen: ')
     location_1 = controller.getLocation(ip_1, analyzer)
     vertexA = controller.searchVertexCountry(location_1, analyzer)
@@ -146,16 +148,13 @@ def optionEight(analyzer):
     location_2 = controller.getLocation(ip_2, analyzer)
     vertexB = controller.searchVertexCountry(location_2, analyzer)
     print(controller.req3(analyzer, vertexA, vertexB))
-    
-
-def optionNine(analyzer):
-    '''Dada la IP encontrar el pais y luego encontrar ruta minima'''
-    pass
 
 
-def optionTen(analyzer):
+def optionTen():
     '''Hacer el mapa :)'''
-    pass
+    print("\nF no lo hicimos :((")
+    print(emojis.random_emoji(20))
+    print("aaaa te creas (revisar carpeta data uwu)")
 
 
 """
@@ -169,36 +168,36 @@ def thread_cycle():
         print("Ingrese una opción para continuar:")
         inputs = input('~')
 
-        if int(inputs[0]) == 1:
+        if int(inputs) == 1:
             print("\nInicializando....")
             analyzer = controller.init()
 
-        elif int(inputs[0]) == 2:
+        elif int(inputs) == 2:
             optionTwo(analyzer)
 
-        elif int(inputs[0]) == 3:
+        elif int(inputs) == 3:
             optionThree(analyzer)
 
-        elif int(inputs[0]) == 4:
+        elif int(inputs) == 4:
             optionFour(analyzer)
 
-        elif int(inputs[0]) == 5:
+        elif int(inputs) == 5:
             optionFive(analyzer)
 
-        elif int(inputs[0]) == 6:
+        elif int(inputs) == 6:
             optionSix(analyzer)
 
-        elif int(inputs[0]) == 7:
+        elif int(inputs) == 7:
             optionSeven(analyzer)
 
-        elif int(inputs[0]) == 8:
+        elif int(inputs) == 8:
             optionEight(analyzer)
 
-        elif int(inputs[0]) == 9:
+        elif int(inputs) == 9:
             optionNine(analyzer)
 
-        elif int(inputs[0]) == 10:
-            optionTen(analyzer)
+        elif int(inputs) == 10:
+            optionTen()
 
         else:
             sys.exit(0)

@@ -25,9 +25,8 @@
  """
 
 from requests import get
-import ipapi
-import geopandas 
-import folium 
+# import geopandas
+# import folium
 import config
 from DISClib.ADT.graph import gr
 from DISClib.ADT import map as mp
@@ -84,7 +83,7 @@ def newAnalyzer():
                                               size=200,
                                               comparefunction=cmplandingpoints)
 
-        analyzer['country_codes'] =  mp.newMap(
+        analyzer['country_codes'] = mp.newMap(
             numelements=1400,
             maptype='PROBING')
 
@@ -99,7 +98,7 @@ def newAnalyzer():
         analyzer['capitals'] = mp.newMap(
             numelements=1400,
             maptype='PROBING')
-        
+
         analyzer['LP_lat_long'] = mp.newMap(
             numelements=1400,
             maptype='PROBING')
@@ -324,8 +323,9 @@ def searchVertexCountry(pais, analyzer):
     else:
         return None
 
-def getLocation(ip, analyzer): 
-    loc = get('https://ipapi.co/{ip}/json/'.format(ip = ip)) 
+
+def getLocation(ip, analyzer):
+    loc = get('https://ipapi.co/{ip}/json/'.format(ip=ip))
     info = loc.json()
     code = info['country_code']
     country = mp.get(analyzer['country_codes'], code)
@@ -342,6 +342,32 @@ def Kosaraju(graph):
 
 def arestronglyConnected(s, vertexA, vertexB):
     return scc.stronglyConnected(s, vertexA, vertexB)
+
+
+def getCriticalVertex(mapa):
+    keys = mp.keySet(mapa)
+    mayor = -1
+    key = []
+    for i in lt.iterator(keys):
+        if int(i) < 20000:
+            pair = mp.get(mapa, i)
+            value = me.getValue(pair)
+            size = lt.size(value['cables'])
+            if size >= mayor:
+                mayor = size
+                key.append(i)
+
+    definitiva = []
+
+    for k in key:
+        pair = mp.get(mapa, k)
+        value = me.getValue(pair)
+        size = lt.size(value['cables'])
+        print(pair, size)
+        if size == mayor:
+            definitiva.append(k)
+
+    return definitiva
 
 
 def DijsktraAlgo(graph, vertexA):

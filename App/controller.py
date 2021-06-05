@@ -19,12 +19,12 @@
  * You should have received a copy of the GNU General Public License
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
-from requests import get
-import ipapi
-import geopandas 
-import folium 
-from IPython.display import HTML
-import pandas as pd 
+
+# from requests import get
+# import geopandas
+import folium
+# from IPython.display import HTML
+# import pandas as pd
 
 import config as cf
 from App import model
@@ -55,6 +55,8 @@ def init():
     return analyzer
 
 # Funciones para la carga de datos
+
+
 def createMap(analyzer, filename):
     landingFile = cf.data_dir + filename
     input_file = csv.DictReader(open(landingFile, encoding="utf-8"),
@@ -66,12 +68,15 @@ def createMap(analyzer, filename):
         name = name.lower()
         latitude = i['latitude']
         longitude = i['longitude']
-        mp.put(analyzer['LP_lat_long'],LP_id, [latitude,longitude])
-        folium.Marker([latitude, longitude], popup= name, tooltip= 'click').add_to(Map) 
+        mp.put(analyzer['LP_lat_long'], LP_id, [latitude, longitude])
+        folium.Marker(
+            [latitude, longitude], popup=name, tooltip='click').add_to(Map)
 
-    Map.save('/Users/joseluistavera/Documents/EDA/Reto4-G12/Docs/Map.html')
+    direction = cf.data_dir + 'Map.html'
+    Map.save(direction)
 
     return Map
+
 
 def loadLandingPoints(analyzer, filename):
     """.DS_Store"""
@@ -122,7 +127,8 @@ def addCountries2(analyzer, file):
     for i in input_file:
         mp.put(analyzer['countries2'], i['CountryName'], i)
 
-def loadCountrycodes(analyzer, file): 
+
+def loadCountrycodes(analyzer, file):
     landingFile = cf.data_dir + file
     input_file = csv.DictReader(open(landingFile, encoding="utf-8"),
                                 delimiter=",")
@@ -147,7 +153,8 @@ def searchCountry(name, analyzer):
 def searchVertexCountry(pais, analyzer):
     return model.searchVertexCountry(pais, analyzer)
 
-def getLocation(ip, analyzer): 
+
+def getLocation(ip, analyzer):
     return model.getLocation(ip, analyzer)
 
 # Funciones de consulta sobre el catálogo
@@ -160,6 +167,11 @@ def req1(graph, vertexA, vertexB):
         return path
     else:
         return "Error en los vértices"
+
+
+def req2(analyzer):
+    mapa = analyzer['landing_connections']
+    return model.getCriticalVertex(mapa)
 
 
 def req3(analyzer, vertexA, vertexB):
@@ -178,7 +190,3 @@ def req4(graph):
 def req5(analyzer, landing_point):
     return model.findCountriesFromAdjacents(
             analyzer['connections'], landing_point)
-
-
-
-
