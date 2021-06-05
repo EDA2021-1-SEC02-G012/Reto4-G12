@@ -57,36 +57,42 @@ def init():
 # Funciones para la carga de datos
 
 
-def createMap(analyzer, filename):
+def loadLandingPoints(analyzer, filename):
+    """.DS_Store"""
     landingFile = cf.data_dir + filename
     input_file = csv.DictReader(open(landingFile, encoding="utf-8"),
                                 delimiter=",")
     Map = folium.Map()
     for i in input_file:
-        LP_id = i['landing_point_id']
         name = i['name'].split(', ')[0]
         name = name.lower()
+        mp.put(analyzer['landing_points'], name, i['landing_point_id'])
+
+        LP_id = i['landing_point_id']
         latitude = i['latitude']
         longitude = i['longitude']
         mp.put(analyzer['LP_lat_long'], LP_id, [latitude, longitude])
         folium.Marker(
             [latitude, longitude], popup=name, tooltip='click').add_to(Map)
 
+        lt.addLast(analyzer['landing_point_list'], i)
+
+        model.addConnectionToLandingMapVer3(i, analyzer['landing_points2'])
+
+        mp.put(analyzer['landing_points_map'], i['landing_point_id'], i)
+
     direction = cf.data_dir + 'Map.html'
     Map.save(direction)
 
-    return Map
 
-
-def loadLandingPoints(analyzer, filename):
-    """.DS_Store"""
+def loadCountries(analyzer, filename):
     landingFile = cf.data_dir + filename
     input_file = csv.DictReader(open(landingFile, encoding="utf-8"),
                                 delimiter=",")
     for i in input_file:
-        name = i['name'].split(', ')[0]
-        name = name.lower()
-        mp.put(analyzer['landing_points'], name, i['landing_point_id'])
+        mp.put(analyzer['countries2'], i['CountryName'], i)
+
+        mp.put(analyzer['country_codes'], i['CountryCode'], i['CountryName'])
 
 
 def loadConnections(analyzer, filename):
@@ -97,51 +103,12 @@ def loadConnections(analyzer, filename):
     landingFile = cf.data_dir + filename
     input_file = csv.DictReader(open(landingFile, encoding="utf-8"),
                                 delimiter=",")
-    last = None
     for i in input_file:
-        if last is not None:
-            a1 = (last['\ufefforigin'] == i['destination'])
-            a2 = (last['destination'] == i['\ufefforigin'])
-            sameVertexes = a1 and a2
-            if sameVertexes:
-                model.addConnection(analyzer, i)
-                model.addConnectionToLandingMap(i, analyzer)
-        last = i
+        model.addConnection(analyzer, i)
+        model.addConnectionToLandingMap(i, analyzer)
     model.addGroundConnections(analyzer)
     model.relateSameLandings(analyzer)
-    return ':)'
 
-
-def addLandingList(analyzer, file):
-    landingFile = cf.data_dir + file
-    input_file = csv.DictReader(open(landingFile, encoding="utf-8"),
-                                delimiter=",")
-    for i in input_file:
-        lt.addLast(analyzer['landing_point_list'], i)
-
-
-def addCountries2(analyzer, file):
-    landingFile = cf.data_dir + file
-    input_file = csv.DictReader(open(landingFile, encoding="utf-8"),
-                                delimiter=",")
-    for i in input_file:
-        mp.put(analyzer['countries2'], i['CountryName'], i)
-
-
-def loadCountrycodes(analyzer, file):
-    landingFile = cf.data_dir + file
-    input_file = csv.DictReader(open(landingFile, encoding="utf-8"),
-                                delimiter=",")
-    for i in input_file:
-        mp.put(analyzer['country_codes'], i['CountryCode'], i['CountryName'])
-
-
-def addLandingPoints(analyzer, file):
-    landingFile = cf.data_dir + file
-    input_file = csv.DictReader(open(landingFile, encoding="utf-8"),
-                                delimiter=",")
-    for i in input_file:
-        model.addConnectionToLandingMapVer3(i, analyzer['landing_points2'])
 
 # Funciones de ordenamiento
 
@@ -170,8 +137,7 @@ def req1(graph, vertexA, vertexB):
 
 
 def req2(analyzer):
-    mapa = analyzer['landing_connections']
-    return model.getCriticalVertex(mapa)
+    return model.getCriticalVertex(analyzer)
 
 
 def req3(analyzer, vertexA, vertexB):
@@ -190,3 +156,7 @@ def req4(graph):
 def req5(analyzer, landing_point):
     return model.findCountriesFromAdjacents(
             analyzer['connections'], landing_point)
+
+
+def req6(analyzer, pais, cable):
+    return model.findIfCableInCountry(analyzer, pais, cable)

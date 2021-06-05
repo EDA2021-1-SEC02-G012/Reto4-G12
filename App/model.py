@@ -63,6 +63,7 @@ def newAnalyzer():
                     'countries2': None,
                     'country_codes': None,
                     'landing_points2': None,
+                    'landing_points_map': None,
                     'capitals': None,
                     'LP_lat_long': None,
                     'Vertex_lat_long': None
@@ -79,7 +80,7 @@ def newAnalyzer():
         analyzer['landing_point_list'] = lt.newList('ARRAY_LIST')
 
         analyzer['connections'] = gr.newGraph(datastructure='ADJ_LIST',
-                                              directed=False,
+                                              directed=True,
                                               size=200,
                                               comparefunction=cmplandingpoints)
 
@@ -92,6 +93,10 @@ def newAnalyzer():
             maptype='PROBING')
 
         analyzer['landing_points2'] = mp.newMap(
+            numelements=1400,
+            maptype='PROBING')
+
+        analyzer['landing_points_map'] = mp.newMap(
             numelements=1400,
             maptype='PROBING')
 
@@ -134,8 +139,8 @@ def formatVertex(connection):
 def addConnection(analyzer, connection):
     cleanLength(connection)
     vertexes = formatVertex(connection)
-    for i in vertexes:
-        gr.insertVertex(analyzer['connections'], i)
+    gr.insertVertex(analyzer['connections'], vertexes[0])
+    gr.insertVertex(analyzer['connections'], vertexes[1])
     weight = connection['cable_length']
     weight = weight.split(' ')[0]
     if ',' in weight:
@@ -143,11 +148,11 @@ def addConnection(analyzer, connection):
         weight = float(weight[0])*1000+float(weight[1])
     else:
         weight = float(weight)
-    exists = gr.getEdge(analyzer['connections'], vertexes[0], vertexes[1])
-    # Puede solucionarnos cosas, generALIZAAR CON SANTICONNECTION
-    if exists is None:
-        gr.addEdge(
+    gr.addEdge(
             analyzer['connections'], vertexes[0], vertexes[1],
+            weight)
+    gr.addEdge(
+            analyzer['connections'], vertexes[1], vertexes[0],
             weight)
 
 
@@ -158,6 +163,7 @@ def addSantiConnection(analyzer, origin, destination, distance):
     edge = gr.getEdge(analyzer['connections'], origin, destination)
     if edge is None:
         gr.addEdge(analyzer['connections'], origin, destination, distance)
+        gr.addEdge(analyzer['connections'], destination, origin, distance)
     return analyzer
 
 
@@ -172,8 +178,9 @@ def addConnectionToLandingMap(cable, analyzer):
         value = me.getValue(entry)
     else:
         value = newDataEntry()
-    lt.addLast(value['cables'], cable['cable_name'])
-    mp.put(selected_map, cable['\ufefforigin'], value)
+    if lt.isPresent(value['cables'], cable['cable_name']) == 0:
+        lt.addLast(value['cables'], cable['cable_name'])
+        mp.put(selected_map, cable['\ufefforigin'], value)
 
 
 def addConnectionToLandingMapVer2(vertex, cable, analyzer):
@@ -184,8 +191,9 @@ def addConnectionToLandingMapVer2(vertex, cable, analyzer):
         value = me.getValue(entry)
     else:
         value = newDataEntry()
-    lt.addLast(value['cables'], cable)
-    mp.put(selected_map, vertex, value)
+    if lt.isPresent(value['cables'], cable) == 0:
+        lt.addLast(value['cables'], cable)
+        mp.put(selected_map, vertex, value)
 
 
 def addConnectionToLandingMapVer3(data, mapa):
@@ -228,6 +236,7 @@ def addGroundConnections(analyzer):
                     float(landingPoint['longitude']))
 
                 gr.addEdge(analyzer['connections'], destination, origin, dist)
+                gr.addEdge(analyzer['connections'], origin, destination, dist)
                 addConnectionToLandingMapVer2(origin, cable, analyzer)
                 addConnectionToLandingMapVer2(destination, cable, analyzer)
             index += 1
@@ -248,6 +257,8 @@ def addGroundConnections(analyzer):
             gr.insertVertex(analyzer['connections'], destination)
             gr.addEdge(
                 analyzer['connections'], destination, origin, distance)
+            gr.addEdge(
+                analyzer['connections'], origin, destination, distance)
             addConnectionToLandingMapVer2(origin, cable, analyzer)
             addConnectionToLandingMapVer2(destination, cable, analyzer)
             index += 1
@@ -344,7 +355,8 @@ def arestronglyConnected(s, vertexA, vertexB):
     return scc.stronglyConnected(s, vertexA, vertexB)
 
 
-def getCriticalVertex(mapa):
+def getCriticalVertex(analyzer):
+    mapa = analyzer['landing_connections']
     keys = mp.keySet(mapa)
     mayor = -1
     key = []
@@ -363,11 +375,16 @@ def getCriticalVertex(mapa):
         pair = mp.get(mapa, k)
         value = me.getValue(pair)
         size = lt.size(value['cables'])
-        print(pair, size)
         if size == mayor:
             definitiva.append(k)
 
-    return definitiva
+    for cable in definitiva:
+        print('\n')
+        print('ID:', cable)
+        print(
+            "Country:",
+            mp.get(analyzer['landing_points_map'], cable)['value']['name'])
+        print('Cables:', mayor)
 
 
 def DijsktraAlgo(graph, vertexA):
@@ -394,20 +411,32 @@ def findCountriesFromAdjacents(graph, landingPoint):
     for vertex in lt.iterator(list_adjacents):
         adjacents_vertex = gr.adjacents(graph, vertex)
         for adjacent in lt.iterator(adjacents_vertex):
-            if 'Capital' in adjacent:
-                countries.append(adjacent)
+            countries.append(adjacent)
             if landingPoint in adjacent:
                 otra_variable = gr.adjacents(graph, adjacent)
                 for otro_adjacente in lt.iterator(otra_variable):
                     otro_adjacente2 = gr.adjacents(graph, otro_adjacente)
-                    if 'Capital' in otro_adjacente:
-                        countries.append(otro_adjacente)
-                        for auxilio in lt.iterator(otro_adjacente2):
-                            otro_adjacente_3 = gr.adjacents(graph, auxilio)
-                            if 'Capital' in auxilio:
-                                countries.append(auxilio)
-                            for each_auxilio in lt.iterator(otro_adjacente_3):
-                                if 'Capital' in each_auxilio:
-                                    countries.append(each_auxilio)
+                    countries.append(otro_adjacente)
+                    for auxilio in lt.iterator(otro_adjacente2):
+                        otro_adjacente_3 = gr.adjacents(graph, auxilio)
+                        countries.append(auxilio)
+                        for each_auxilio in lt.iterator(otro_adjacente_3):
+                            countries.append(each_auxilio)
 
     return countries
+
+
+def findIfCableInCountry(analyzer, pais, cable):
+    mapa = analyzer['landing_points2']
+    lps = mp.get(mapa, pais)
+    for i in lt.iterator(lps['value']['cables']):
+        namecable = i['landing_point_id']
+        listcables = mp.get(
+            analyzer['landing_connections'], namecable)['value']
+        if lt.isPresent(listcables['cables'], cable):
+            vertex = namecable + '-' + cable
+            break
+
+    adyacentes = gr.adjacents(analyzer['connections'], vertex)
+    adyacentes2 = gr.adjacents(analyzer['connections'], '7688-ALBA-1')
+    return adyacentes2, adyacentes

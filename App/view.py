@@ -62,17 +62,22 @@ def printMenu():
     print(
         "7️⃣ - Encontrar landing points afectados"
         + emojis.random_emoji(2))
+    print(
+        "8️⃣ - Encontrar ancho de banda máximo"
+        + emojis.random_emoji(2))
+    print(
+        "9️⃣ - Encontrar ruta mínima dadas dos IPs"
+        + emojis.random_emoji(2))
+    print(
+        "🔟 - Hacer el mapa"
+        + emojis.random_emoji(2))
 
 
 def optionTwo(analyzer):
     print("\nCargando información... " + emojis.random_emoji(4))
-    controller.createMap(analyzer, landing_points)
     controller.loadLandingPoints(analyzer, landing_points)
-    controller.addLandingList(analyzer, landing_points)
-    controller.addCountries2(analyzer, countries)
-    controller.addLandingPoints(analyzer, landing_points)
+    controller.loadCountries(analyzer, countries)
     controller.loadConnections(analyzer, connections)
-    controller.loadCountrycodes(analyzer, countries)
     print('Se ha cargado la información exitosamente.')
 
 
@@ -99,7 +104,7 @@ def optionFour(analyzer):
     mayor grado
     Puede haber más de uno
     '''
-    print(controller.req2(analyzer))
+    controller.req2(analyzer)
 
 
 def optionFive(analyzer):
@@ -132,11 +137,9 @@ def optionSeven(analyzer):
 
 
 def optionEight(analyzer):
-    '''Necesitamos: País, cable
-    Con el país obtenemos todos los landing points
-    Los país + cable -> Vertices que Necesitamos
-    Encontramos los adyacentes
-    Creamos un mapa llave lp valor (pais, usuarios de internet)'''
+    pais = input('Ingrese el nombre del país: ')
+    cable = input('Ingrese el nombre del cable: ')
+    print(controller.req6(analyzer, pais, cable))
 
 
 def optionNine(analyzer):
