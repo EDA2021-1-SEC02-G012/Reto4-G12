@@ -104,6 +104,12 @@ def loadConnections(analyzer, filename):
     input_file = csv.DictReader(open(landingFile, encoding="utf-8"),
                                 delimiter=",")
     for i in input_file:
+        pointA = i['\ufefforigin']
+        pointB = i['destination']
+        coordA = mp.get(analyzer['LP_lat_long'], pointA)['value']
+        coordB = mp.get(analyzer['LP_lat_long'], pointB)['value']
+        linea = [coordA, coordB]
+        folium.PolyLine(linea)
         model.addConnection(analyzer, i)
         model.addConnectionToLandingMap(i, analyzer)
     model.addGroundConnections(analyzer)
