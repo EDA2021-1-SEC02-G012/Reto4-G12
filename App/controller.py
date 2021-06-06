@@ -23,11 +23,9 @@
 # from requests import get
 # import geopandas
 import folium
-# from Data import country_finder
+from Data import country_finder
 # from IPython.display import HTML
 # import pandas as pd
-
-from DISClib.Algorithms.Graphs import bfs
 import config as cf
 from App import model
 from DISClib.ADT import map as mp
@@ -93,21 +91,25 @@ def createMap(analyzer, filename1, filename2, filename3):
 
         folium.Marker(
             [latitude, longitude], popup=name, tooltip='click').add_to(Map)
-        # coordinates = str(latitude) + ', ' + str(longitude)
+        coordinates = str(latitude) + ', ' + str(longitude)
 
-        # belonging_country_info = country_finder.findCountry(coordinates)
-        # belonging_country = belonging_country_info['address']['country_code']
-        # belonging_country = belonging_country.upper()
-        # belonging_country_name = mp.get(
-        #    analyzer['country_codes'], belonging_country)['value']
-        # destination_coordinates = capital_locations[belonging_country_name]
-        # destination_list_coordinates = [
-        #    float(destination_coordinates[0]),
-        #    float(destination_coordinates[1])]
-        # linea = [
-        #    [float(latitude), float(longitude)],
-        #    destination_list_coordinates]
-        # folium.PolyLine(linea, color='green').add_to(Map)
+        belonging_country_info = country_finder.findCountry(coordinates)
+        try:
+            belonging_country = belonging_country_info['address']
+            belonging_country = belonging_country['country_code']
+            belonging_country = belonging_country.upper()
+            belonging_country_name = mp.get(
+                analyzer['country_codes'], belonging_country)['value']
+            destination_coordinates = capital_locations[belonging_country_name]
+            destination_list_coordinates = [
+                float(destination_coordinates[0]),
+                float(destination_coordinates[1])]
+            linea = [
+                [float(latitude), float(longitude)],
+                destination_list_coordinates]
+            folium.PolyLine(linea, color='green').add_to(Map)
+        except KeyError:
+            pass
 
     # Tercera Iteración: Connections
     landingFile = cf.data_dir + filename2
@@ -188,8 +190,10 @@ def loadConnections(analyzer, filename):
 def searchCountry(name, analyzer):
     return model.searchCountry(name, analyzer)
 
-def SortCountries(analyzer, paises, LP): 
+
+def SortCountries(analyzer, paises, LP):
     return model.SortCountries(analyzer, paises, LP)
+
 
 def searchVertexCountry(pais, analyzer):
     return model.searchVertexCountry(pais, analyzer)
@@ -206,7 +210,7 @@ def req1(graph, vertexA, vertexB):
         tree = model.Kosaraju(graph)
         path = model.arestronglyConnected(tree, vertexA, vertexB)
         clustersAB = model.sccCount(graph, tree, vertexA)['components']
-        return (path, clustersAB) 
+        return (path, clustersAB)
     else:
         return "Error en los vértices"
 

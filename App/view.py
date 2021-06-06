@@ -95,12 +95,13 @@ def optionThree(analyzer):
     vertexB = vertexB.lower()
     vertexB_cod = controller.searchCountry(vertexB, analyzer)
     Req1 = (controller.req1(graph, vertexA_cod, vertexB_cod))
-    if Req1[0] == True: 
+    if Req1[0] is True:
         print('\n')
         print('Los vértices se encuentran fuertemente conectados')
-    else: 
+    else:
         print('Los vértices no se encuentran fuertemente conectados')
     print('El número de total de clusters en la red es de: ' + str(Req1[1]))
+
 
 def optionFour(analyzer):
     '''
@@ -129,6 +130,7 @@ def optionFive(analyzer):
     ruta = controller.req3(analyzer, vertexA, vertexB)
     PrintRutaMinima(ruta)
 
+
 def optionSix(analyzer):
     """Red de expansión mínima: MST"""
     print('Desea imprimir el camino mayor? (Digite Y de así serlo)')
@@ -148,6 +150,7 @@ def optionSeven(analyzer):
     paises = controller.req5(analyzer, landingPoint)
     sorted_paises = controller.SortCountries(analyzer, paises, LP)
     PaisesAfectados(sorted_paises)
+
 
 def optionEight(analyzer):
     pais = input('Ingrese el nombre del país: ')
@@ -175,11 +178,13 @@ def optionTen(analyzer):
     controller.createMap(analyzer, landing_points, connections, countries)
     print("\naaaa te creas (revisar carpeta data uwu)")
 
+
 """
 Funciones de Impresión y Ordenamiento
 """
 
-def PrintRutaMinima(ruta): 
+
+def PrintRutaMinima(ruta):
     table = ruta[0]
     distancia = ruta[1]
     print('\n')
@@ -196,15 +201,16 @@ def PrintRutaMinima(ruta):
     print('DISTANCIA TOTAL: ' + str(distancia) + ' km')
     print('NÚMERO DE SALTOS: ' + str(len(table) - 2))
 
+
 def PaisesAfectados(sorted_paises):
     paises_ordenados = []
     paises_ordenados.append(['PAÍS', 'DISTANCIA'])
-    paises_ordenados.append(['',''])
+    paises_ordenados.append(['', ''])
     menores = sorted(sorted_paises.values())
-    for i in menores: 
-        for pais in sorted_paises: 
+    for i in menores:
+        for pais in sorted_paises:
             if i == sorted_paises[pais]:
-                paises_ordenados.append([pais, i]) 
+                paises_ordenados.append([pais, i])
 
     table = paises_ordenados
     print('\n')
@@ -216,17 +222,18 @@ def PaisesAfectados(sorted_paises):
         ["{:>" + str(longest_col) + "}" for longest_col in longest_cols])
     for row in table:
         print(row_format.format(*row))
-    
+
     print('\n')
     print('NÚMERO DE PAÍSES AFECTADOS: ' + str(len(sorted_paises)))
 
-def PrintAnchodeBanda(anchos_banda): 
+
+def PrintAnchodeBanda(anchos_banda):
     table = []
     table.append(['PAÍS', 'ANCHO DE BANDA Mbps'])
     table.append(['', ''])
-    for pais in anchos_banda: 
+    for pais in anchos_banda:
         table.append([pais, anchos_banda[pais]])
-    
+
     print('\n')
     longest_cols = [
         (max([len(str(row[i])) for row in table]) + 3)
@@ -236,6 +243,7 @@ def PrintAnchodeBanda(anchos_banda):
         ["{:>" + str(longest_col) + "}" for longest_col in longest_cols])
     for row in table:
         print(row_format.format(*row))
+
 
 """
 Menu principal
