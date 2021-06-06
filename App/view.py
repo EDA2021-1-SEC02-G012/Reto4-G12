@@ -94,8 +94,13 @@ def optionThree(analyzer):
     vertexB = input('Ingrese el vértice destino: ')
     vertexB = vertexB.lower()
     vertexB_cod = controller.searchCountry(vertexB, analyzer)
-    print(controller.req1(graph, vertexA_cod, vertexB_cod))
-
+    Req1 = (controller.req1(graph, vertexA_cod, vertexB_cod))
+    if Req1[0] == True: 
+        print('\n')
+        print('Los vértices se encuentran fuertemente conectados')
+    else: 
+        print('Los vértices no se encuentran fuertemente conectados')
+    print('El número de total de clusters en la red es de: ' + str(Req1[1]))
 
 def optionFour(analyzer):
     '''
@@ -121,8 +126,8 @@ def optionFive(analyzer):
     paisB = input('Ingrese el país destino: ')
     paisB = paisB.lower()
     vertexB = controller.searchVertexCountry(paisB, analyzer)
-    print(controller.req3(analyzer, vertexA, vertexB))
-
+    ruta = controller.req3(analyzer, vertexA, vertexB)
+    PrintRutaMinima(ruta)
 
 def optionSix(analyzer):
     """Red de expansión mínima: MST"""
@@ -133,13 +138,15 @@ def optionSeven(analyzer):
     """Impacto que tendría el fallo de un LP"""
     LP = input('Ingrese el landing point que falló: ')
     landingPoint = controller.searchCountry(LP.lower(), analyzer)
-    print(controller.req5(analyzer, landingPoint))
-
+    paises = controller.req5(analyzer, landingPoint)
+    sorted_paises = controller.SortCountries(analyzer, paises, LP)
+    PaisesAfectados(sorted_paises)
 
 def optionEight(analyzer):
     pais = input('Ingrese el nombre del país: ')
     cable = input('Ingrese el nombre del cable: ')
-    print(controller.req6(analyzer, pais, cable))
+    anchos_banda = (controller.req6(analyzer, pais, cable))
+    PrintAnchodeBanda(anchos_banda)
 
 
 def optionNine(analyzer):
@@ -150,7 +157,8 @@ def optionNine(analyzer):
     ip_2 = input('Ingrese la IP de destino: ')
     location_2 = controller.getLocation(ip_2, analyzer)
     vertexB = controller.searchVertexCountry(location_2, analyzer)
-    print(controller.req7(analyzer, vertexA, vertexB))
+    ruta = (controller.req3(analyzer, vertexA, vertexB))
+    PrintRutaMinima(ruta)
 
 
 def optionTen(analyzer):
@@ -160,6 +168,67 @@ def optionTen(analyzer):
     controller.createMap(analyzer, landing_points, connections, countries)
     print("\naaaa te creas (revisar carpeta data uwu)")
 
+"""
+Funciones de Impresión y Ordenamiento
+"""
+
+def PrintRutaMinima(ruta): 
+    table = ruta[0]
+    distancia = ruta[1]
+    print('\n')
+    longest_cols = [
+        (max([len(str(row[i])) for row in table]) + 3)
+        for i in range(len(table[0]))
+    ]
+    row_format = "".join(
+        ["{:>" + str(longest_col) + "}" for longest_col in longest_cols])
+    for row in table:
+        print(row_format.format(*row))
+
+    print('\n')
+    print('DISTANCIA TOTAL: ' + str(distancia) + ' km')
+    print('NÚMERO DE SALTOS: ' + str(len(table) - 2))
+
+def PaisesAfectados(sorted_paises):
+    paises_ordenados = []
+    paises_ordenados.append(['PAÍS', 'DISTANCIA'])
+    paises_ordenados.append(['',''])
+    menores = sorted(sorted_paises.values())
+    for i in menores: 
+        for pais in sorted_paises: 
+            if i == sorted_paises[pais]:
+                paises_ordenados.append([pais, i]) 
+
+    table = paises_ordenados
+    print('\n')
+    longest_cols = [
+        (max([len(str(row[i])) for row in table]) + 3)
+        for i in range(len(table[0]))
+    ]
+    row_format = "".join(
+        ["{:>" + str(longest_col) + "}" for longest_col in longest_cols])
+    for row in table:
+        print(row_format.format(*row))
+    
+    print('\n')
+    print('NÚMERO DE PAÍSES AFECTADOS: ' + str(len(sorted_paises)))
+
+def PrintAnchodeBanda(anchos_banda): 
+    table = []
+    table.append(['PAÍS', 'ANCHO DE BANDA Mbps'])
+    table.append(['', ''])
+    for pais in anchos_banda: 
+        table.append([pais, anchos_banda[pais]])
+    
+    print('\n')
+    longest_cols = [
+        (max([len(str(row[i])) for row in table]) + 3)
+        for i in range(len(table[0]))
+    ]
+    row_format = "".join(
+        ["{:>" + str(longest_col) + "}" for longest_col in longest_cols])
+    for row in table:
+        print(row_format.format(*row))
 
 """
 Menu principal
