@@ -78,7 +78,6 @@ def optionTwo(analyzer):
     controller.loadLandingPoints(analyzer, landing_points)
     controller.loadCountries(analyzer, countries)
     controller.loadConnections(analyzer, connections)
-    controller.createMap(analyzer, landing_points, connections)
     print('Se ha cargado la información exitosamente.')
 
 
@@ -154,11 +153,12 @@ def optionNine(analyzer):
     print(controller.req3(analyzer, vertexA, vertexB))
 
 
-def optionTen():
+def optionTen(analyzer):
     '''Hacer el mapa :)'''
     print("\nF no lo hicimos :((")
     print(emojis.random_emoji(20))
-    print("aaaa te creas (revisar carpeta data uwu)")
+    controller.createMap(analyzer, landing_points, connections, countries)
+    print("\naaaa te creas (revisar carpeta data uwu)")
 
 
 """
@@ -201,7 +201,7 @@ def thread_cycle():
             optionNine(analyzer)
 
         elif int(inputs) == 10:
-            optionTen()
+            optionTen(analyzer)
 
         else:
             sys.exit(0)

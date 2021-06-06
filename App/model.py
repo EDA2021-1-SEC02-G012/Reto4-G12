@@ -405,7 +405,6 @@ def findMST(graph):
 
 
 def findCountriesFromAdjacents(graph, landingPoint):
-    # Esto no funciona
     list_adjacents = gr.adjacents(graph, landingPoint)
     countries = []
     for vertex in lt.iterator(list_adjacents):
@@ -415,13 +414,7 @@ def findCountriesFromAdjacents(graph, landingPoint):
             if landingPoint in adjacent:
                 otra_variable = gr.adjacents(graph, adjacent)
                 for otro_adjacente in lt.iterator(otra_variable):
-                    otro_adjacente2 = gr.adjacents(graph, otro_adjacente)
                     countries.append(otro_adjacente)
-                    for auxilio in lt.iterator(otro_adjacente2):
-                        otro_adjacente_3 = gr.adjacents(graph, auxilio)
-                        countries.append(auxilio)
-                        for each_auxilio in lt.iterator(otro_adjacente_3):
-                            countries.append(each_auxilio)
 
     return countries
 
@@ -440,3 +433,18 @@ def findIfCableInCountry(analyzer, pais, cable):
     adyacentes = gr.adjacents(analyzer['connections'], vertex)
     adyacentes2 = gr.adjacents(analyzer['connections'], '7688-ALBA-1')
     return adyacentes2, adyacentes
+
+
+def primleisi(analyzer, listaDario):
+    country_base = analyzer['landing_points2']
+    lista = []
+    for i in listaDario:
+        vertex = i.split('-')
+        vertex = vertex[0]
+        country = mp.get(country_base, vertex)
+        lista.append(country)
+    return lista
+
+
+def elazotanalgas3000(alejandra):
+    return
