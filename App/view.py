@@ -126,7 +126,14 @@ def optionFive(analyzer):
 
 def optionSix(analyzer):
     """Red de expansión mínima: MST"""
-    print(controller.req4(analyzer['connections']))
+    print('Desea imprimir el camino mayor? (Digite Y de así serlo)')
+    print('De lo contrario digite cualquier otra cosa')
+    option = input('~')
+    if option == 'Y' or option == 'y':
+        bool = True
+    else:
+        bool = False
+    print(controller.req4(analyzer['connections'], bool))
 
 
 def optionSeven(analyzer):

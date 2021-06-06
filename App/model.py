@@ -33,6 +33,7 @@ from DISClib.ADT import map as mp
 from DISClib.ADT import list as lt
 from DISClib.Algorithms.Sorting import quicksort as qs
 from DISClib.Algorithms.Graphs import scc
+from DISClib.Algorithms.Graphs import bfs
 from DISClib.Algorithms.Graphs import dijsktra
 from DISClib.Algorithms.Graphs import prim
 from DISClib.DataStructures import mapentry as me
@@ -427,12 +428,57 @@ def findDistTo(caminominimo, vertexB):
 
 
 def findMST(graph):
-    '''no.nodos
-    costo total
-    conexion mas larga
-    conexion mas corta'''
-    mst = prim.PrimMST(graph)['edgeTo']
+    mst = prim.PrimMST(graph)
     return mst
+
+
+def get_total_distance(hashtable):
+    keys = mp.keySet(hashtable)
+    dist = 0
+    for i in lt.iterator(keys):
+        dist += float(mp.get(hashtable, i)['value'])
+    return dist
+
+
+def doBFS(edgeTo):
+    minigraph = gr.newGraph(
+        datastructure='ADJ_LIST',
+        directed=True,
+        size=1000,
+        comparefunction=cmplandingpoints)
+    keys = mp.keySet(edgeTo)
+    firstVertex = lt.getElement(keys, 1)
+    for i in lt.iterator(keys):
+        vertexA = i
+        vertexB = mp.get(edgeTo, i)['value']['vertexA']
+        gr.insertVertex(minigraph, vertexA)
+        gr.insertVertex(minigraph, vertexB)
+
+    for i in lt.iterator(keys):
+        vertexA = i
+        vertexB = mp.get(edgeTo, i)['value']['vertexA']
+        weight = mp.get(edgeTo, i)['value']['weight']
+        gr.addEdge(minigraph, vertexA, vertexB, weight)
+        gr.addEdge(minigraph, vertexB, vertexA, weight)
+
+    distNsize = {}
+    vertexes = gr.vertices(minigraph)
+    mayor = 0
+
+    recorrido = bfs.BreadhtFisrtSearch(minigraph, firstVertex)
+    for vertexB in lt.iterator(vertexes):
+        dist = bfs.pathTo(recorrido, vertexB)
+        if dist is not None:
+            size = lt.size(dist)
+            distNsize[size] = dist
+            if size > mayor:
+                mayor = size
+
+    for i in distNsize.keys():
+        if i == mayor:
+            caminomaslargo = distNsize[i]
+
+    return mayor, caminomaslargo
 
 
 def findCountriesFromAdjacents(graph, landingPoint):

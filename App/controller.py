@@ -27,6 +27,7 @@ import folium
 # from IPython.display import HTML
 # import pandas as pd
 
+from DISClib.Algorithms.Graphs import bfs
 import config as cf
 from App import model
 from DISClib.ADT import map as mp
@@ -220,9 +221,17 @@ def req3(analyzer, vertexA, vertexB):
         return "Error en los vértices"
 
 
-def req4(graph):
+def req4(graph, bool):
     mst = model.findMST(graph)
-    return mst
+    dist_to = mst['distTo']
+    edge_to = mst['edgeTo']
+    no_nodos_conectados = dist_to['size']
+    distance = model.get_total_distance(dist_to)
+    longest_branch = model.doBFS(edge_to)
+    if not bool:
+        return no_nodos_conectados, distance, longest_branch[0]
+    else:
+        return no_nodos_conectados, distance, longest_branch
 
 
 def req5(analyzer, landing_point):
