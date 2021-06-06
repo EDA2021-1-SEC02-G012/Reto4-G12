@@ -65,6 +65,7 @@ def newAnalyzer():
                     'landing_points2': None,
                     'landing_points_map': None,
                     'LP_countries': None,
+                    'cable-LP': None,
                     'capitals': None,
                     'LP_lat_long': None,
                     'Vertex_lat_long': None
@@ -93,7 +94,11 @@ def newAnalyzer():
             numelements=1400,
             maptype='PROBING')
 
-        analyzer['LP_countries']= mp.newMap(
+        analyzer['LP_countries'] = mp.newMap(
+            numelements=1400,
+            maptype='PROBING')
+
+        analyzer['cable-LP'] = mp.newMap(
             numelements=1400,
             maptype='PROBING')
 
@@ -116,7 +121,6 @@ def newAnalyzer():
         analyzer['Vertex_lat_long'] = mp.newMap(
             numelements=1400,
             maptype='PROBING')
-
 
         return analyzer
     except Exception as exp:
@@ -213,6 +217,17 @@ def addConnectionToLandingMapVer3(data, mapa):
     mp.put(mapa, name, value)
 
 
+def addConnectionToLandingMapVer4(connection, mapa):
+    cable_name = connection['cable_name']
+    entry = mp.get(mapa, cable_name)
+    if mp.contains(mapa, cable_name):
+        value = me.getValue(entry)
+    else:
+        value = newDataEntry2()
+    lt.addLast(value['landing_points'], connection)
+    mp.put(mapa, cable_name, value)
+
+
 def addGroundConnections(analyzer):
     """Agrega las conexiones por tierra"""
     index = 20000
@@ -277,6 +292,16 @@ def newDataEntry():
     '''
     entry = {'cables': None}
     entry['cables'] = lt.newList('ARRAY_LIST')
+    return entry
+
+
+def newDataEntry2():
+    '''
+    Crea un bucket para guardar todos los eventos dentro de
+    la categoría
+    '''
+    entry = {'landing_points': None}
+    entry['landing_points'] = lt.newList('ARRAY_LIST')
     return entry
 
 
@@ -426,19 +451,13 @@ def findCountriesFromAdjacents(graph, landingPoint):
 
 
 def findIfCableInCountry(analyzer, pais, cable):
-    mapa = analyzer['landing_points2']
-    lps = mp.get(mapa, pais)
-    for i in lt.iterator(lps['value']['cables']):
-        namecable = i['landing_point_id']
-        listcables = mp.get(
-            analyzer['landing_connections'], namecable)['value']
-        if lt.isPresent(listcables['cables'], cable):
-            vertex = namecable + '-' + cable
-            break
-
-    adyacentes = gr.adjacents(analyzer['connections'], vertex)
-    adyacentes2 = gr.adjacents(analyzer['connections'], '7688-ALBA-1')
-    return adyacentes2, adyacentes
+    mapa = analyzer['cable-LP']
+    lps = mp.get(mapa, cable)
+    alejandra = []
+    for i in lt.iterator(lps['value']['landing_points']):
+        alejandra.append(i['\ufefforigin'])
+    listaNORMAL = primleisi(analyzer, alejandra)
+    return elazotanalgas3000(analyzer, listaNORMAL, cable, pais)
 
 
 def primleisi(analyzer, listaDario):
@@ -447,13 +466,25 @@ def primleisi(analyzer, listaDario):
     for i in listaDario:
         vertex = i.split('-')
         vertex = vertex[0]
-        if float(vertex) < 20000 and vertex is not None: 
+        if float(vertex) < 20000 and vertex is not None:
             country = mp.get(country_base, vertex)['value']
             lista.append(country)
-        else: 
+        else:
             country = i.split('-')
+
+    lista = list(set(lista))
     return lista
 
 
-def elazotanalgas3000(alejandra):
-    return
+def elazotanalgas3000(analyzer, listaNORMAL, cable, pais2):
+    countries_map = analyzer['countries2']
+    cable_info_map = analyzer['cable-LP']
+    dick = {}
+    for pais in listaNORMAL:
+        if pais.lower() != pais2.lower():
+            no_usuarios = int(
+                mp.get(countries_map, pais)['value']['Internet users'])
+            info1 = mp.get(cable_info_map, cable)['value']['landing_points']
+            capacidad = float(lt.firstElement(info1)['capacityTBPS'])
+            dick[pais] = ((capacidad*8388608)/no_usuarios)
+    return dick

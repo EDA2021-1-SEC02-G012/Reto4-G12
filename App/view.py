@@ -150,7 +150,7 @@ def optionNine(analyzer):
     ip_2 = input('Ingrese la IP de destino: ')
     location_2 = controller.getLocation(ip_2, analyzer)
     vertexB = controller.searchVertexCountry(location_2, analyzer)
-    print(controller.req3(analyzer, vertexA, vertexB))
+    print(controller.req7(analyzer, vertexA, vertexB))
 
 
 def optionTen(analyzer):

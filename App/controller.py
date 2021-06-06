@@ -23,7 +23,7 @@
 # from requests import get
 # import geopandas
 import folium
-from Data import country_finder
+# from Data import country_finder
 # from IPython.display import HTML
 # import pandas as pd
 
@@ -170,9 +170,14 @@ def loadConnections(analyzer, filename):
                                 delimiter=",")
 
     for i in input_file:
+        model.addConnectionToLandingMapVer4(i, analyzer['cable-LP'])
+
         model.addConnection(analyzer, i)
+
         model.addConnectionToLandingMap(i, analyzer)
+
     model.addGroundConnections(analyzer)
+
     model.relateSameLandings(analyzer)
 
 
@@ -216,7 +221,8 @@ def req3(analyzer, vertexA, vertexB):
 
 
 def req4(graph):
-    return model.findMST(graph)
+    mst = model.findMST(graph)
+    return mst
 
 
 def req5(analyzer, landing_point):
@@ -228,3 +234,12 @@ def req5(analyzer, landing_point):
 
 def req6(analyzer, pais, cable):
     return model.findIfCableInCountry(analyzer, pais, cable)
+
+
+def req7(analyzer, vertexA, vertexB):
+    if (vertexA is not None) and (vertexB is not None):
+        caminominimo = model.DijsktraAlgo(analyzer['connections'], vertexA)
+        path = model.findDistTo(caminominimo, vertexB)
+        return path
+    else:
+        return "Error en los vértices"
