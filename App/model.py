@@ -64,6 +64,7 @@ def newAnalyzer():
                     'country_codes': None,
                     'landing_points2': None,
                     'landing_points_map': None,
+                    'LP_countries': None,
                     'capitals': None,
                     'LP_lat_long': None,
                     'Vertex_lat_long': None
@@ -92,6 +93,10 @@ def newAnalyzer():
             numelements=1400,
             maptype='PROBING')
 
+        analyzer['LP_countries']= mp.newMap(
+            numelements=1400,
+            maptype='PROBING')
+
         analyzer['landing_points2'] = mp.newMap(
             numelements=1400,
             maptype='PROBING')
@@ -111,6 +116,7 @@ def newAnalyzer():
         analyzer['Vertex_lat_long'] = mp.newMap(
             numelements=1400,
             maptype='PROBING')
+
 
         return analyzer
     except Exception as exp:
@@ -400,7 +406,7 @@ def findMST(graph):
     costo total
     conexion mas larga
     conexion mas corta'''
-    mst = prim.PrimMST(graph)
+    mst = prim.PrimMST(graph)['edgeTo']
     return mst
 
 
@@ -436,13 +442,16 @@ def findIfCableInCountry(analyzer, pais, cable):
 
 
 def primleisi(analyzer, listaDario):
-    country_base = analyzer['landing_points2']
+    country_base = analyzer['LP_countries']
     lista = []
     for i in listaDario:
         vertex = i.split('-')
         vertex = vertex[0]
-        country = mp.get(country_base, vertex)
-        lista.append(country)
+        if float(vertex) < 20000 and vertex is not None: 
+            country = mp.get(country_base, vertex)['value']
+            lista.append(country)
+        else: 
+            country = i.split('-')
     return lista
 
 

@@ -130,14 +130,18 @@ def loadLandingPoints(analyzer, filename):
     input_file = csv.DictReader(open(landingFile, encoding="utf-8"),
                                 delimiter=",")
     for i in input_file:
-        name = i['name'].split(', ')[0]
+        name = i['name'].split(', ')
+        name = name[0]
         name = name.lower()
+        country = i['name'].split(', ')[-1]
         mp.put(analyzer['landing_points'], name, i['landing_point_id'])
 
         LP_id = i['landing_point_id']
         latitude = float(i['latitude'])
         longitude = float(i['longitude'])
         mp.put(analyzer['LP_lat_long'], LP_id, [latitude, longitude])
+
+        mp.put(analyzer['LP_countries'], LP_id, country)
 
         lt.addLast(analyzer['landing_point_list'], i)
 
