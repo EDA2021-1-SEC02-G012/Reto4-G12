@@ -78,6 +78,7 @@ def optionTwo(analyzer):
     controller.loadLandingPoints(analyzer, landing_points)
     controller.loadCountries(analyzer, countries)
     controller.loadConnections(analyzer, connections)
+    controller.createMap(analyzer, landing_points, connections)
     print('Se ha cargado la información exitosamente.')
 
 

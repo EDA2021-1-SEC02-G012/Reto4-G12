@@ -57,33 +57,59 @@ def init():
 # Funciones para la carga de datos
 
 
+def createMap(analyzer, filename1, filename2): 
+    landingFile = cf.data_dir + filename1
+    input_file = csv.DictReader(open(landingFile, encoding="utf-8"),
+                                delimiter=",")
+    
+    
+    Map = folium.Map()
+    for i in input_file:
+        name = i['name'].split(', ')[0]
+        name = name.lower()   
+        LP_id = i['landing_point_id']
+        latitude = float(i['latitude'])
+        longitude = float(i['longitude'])
+    
+        folium.Marker(
+            [latitude, longitude], popup=name, tooltip='click').add_to(Map)  
+    
+    landingFile = cf.data_dir + filename2
+    input_file = csv.DictReader(open(landingFile, encoding="utf-8"),
+                                delimiter=",")
+    for i in input_file:
+        pointA = i['\ufefforigin']
+        pointB = i['destination']
+        coordA = mp.get(analyzer['LP_lat_long'], pointA)['value']
+        coordB = mp.get(analyzer['LP_lat_long'], pointB)['value']
+        linea = [coordA, coordB]
+        folium.PolyLine(linea, color = 'red').add_to(Map) 
+
+    direction = cf.data_dir + 'Map.html'
+    Map.save(direction)
+
+
 def loadLandingPoints(analyzer, filename):
     """.DS_Store"""
     landingFile = cf.data_dir + filename
     input_file = csv.DictReader(open(landingFile, encoding="utf-8"),
                                 delimiter=",")
-    Map = folium.Map()
     for i in input_file:
         name = i['name'].split(', ')[0]
         name = name.lower()
         mp.put(analyzer['landing_points'], name, i['landing_point_id'])
 
         LP_id = i['landing_point_id']
-        latitude = i['latitude']
-        longitude = i['longitude']
+        latitude = float(i['latitude'])
+        longitude = float(i['longitude'])
         mp.put(analyzer['LP_lat_long'], LP_id, [latitude, longitude])
-        folium.Marker(
-            [latitude, longitude], popup=name, tooltip='click').add_to(Map)
 
         lt.addLast(analyzer['landing_point_list'], i)
 
         model.addConnectionToLandingMapVer3(i, analyzer['landing_points2'])
 
         mp.put(analyzer['landing_points_map'], i['landing_point_id'], i)
-
-    direction = cf.data_dir + 'Map.html'
-    Map.save(direction)
-
+        
 
 def loadCountries(analyzer, filename):
     landingFile = cf.data_dir + filename
@@ -103,18 +129,13 @@ def loadConnections(analyzer, filename):
     landingFile = cf.data_dir + filename
     input_file = csv.DictReader(open(landingFile, encoding="utf-8"),
                                 delimiter=",")
+
     for i in input_file:
-        pointA = i['\ufefforigin']
-        pointB = i['destination']
-        coordA = mp.get(analyzer['LP_lat_long'], pointA)['value']
-        coordB = mp.get(analyzer['LP_lat_long'], pointB)['value']
-        linea = [coordA, coordB]
-        folium.PolyLine(linea)
         model.addConnection(analyzer, i)
         model.addConnectionToLandingMap(i, analyzer)
     model.addGroundConnections(analyzer)
     model.relateSameLandings(analyzer)
-
+ 
 
 # Funciones de ordenamiento
 
