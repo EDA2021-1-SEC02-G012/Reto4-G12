@@ -187,6 +187,8 @@ def loadConnections(analyzer, filename):
 def searchCountry(name, analyzer):
     return model.searchCountry(name, analyzer)
 
+def SortCountries(analyzer, paises, LP): 
+    return model.SortCountries(analyzer, paises, LP)
 
 def searchVertexCountry(pais, analyzer):
     return model.searchVertexCountry(pais, analyzer)
@@ -202,7 +204,8 @@ def req1(graph, vertexA, vertexB):
     if (vertexA is not None) and (vertexB is not None):
         tree = model.Kosaraju(graph)
         path = model.arestronglyConnected(tree, vertexA, vertexB)
-        return path
+        clustersAB = model.sccCount(graph, tree, vertexA)['components']
+        return (path, clustersAB) 
     else:
         return "Error en los vértices"
 
@@ -215,7 +218,8 @@ def req3(analyzer, vertexA, vertexB):
     if (vertexA is not None) and (vertexB is not None):
         caminominimo = model.DijsktraAlgo(analyzer['connections'], vertexA)
         path = model.findDistTo(caminominimo, vertexB)
-        return path
+        ruta = model.createRoute(path)
+        return ruta
     else:
         return "Error en los vértices"
 
@@ -240,6 +244,7 @@ def req7(analyzer, vertexA, vertexB):
     if (vertexA is not None) and (vertexB is not None):
         caminominimo = model.DijsktraAlgo(analyzer['connections'], vertexA)
         path = model.findDistTo(caminominimo, vertexB)
-        return path
+        ruta = model.createRoute(path)
+        return ruta
     else:
         return "Error en los vértices"

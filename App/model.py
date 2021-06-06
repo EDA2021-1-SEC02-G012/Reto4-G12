@@ -355,6 +355,25 @@ def searchCountry(name, analyzer):
     else:
         return None
 
+def SortCountries(analyzer, paises, LP): 
+    countries = analyzer['countries2']
+    sorted_paises = {}
+    landingPoint_id = mp.get(analyzer['landing_points'], LP.lower())['value']
+    coord = mp.get(analyzer['LP_lat_long'], landingPoint_id)['value']
+    for countri1 in paises: 
+        countri = mp.get(countries, countri1)['value']
+        dist = haversine.haversine(
+                    float(countri['CapitalLatitude']),
+                    float(countri['CapitalLongitude']),
+                    float(coord[0]),
+                    float(coord[1]))
+        
+        sorted_paises[countri1] = dist
+
+    return sorted_paises
+        
+
+
 
 def searchVertexCountry(pais, analyzer):
     mapa = analyzer['capitals']
@@ -384,6 +403,10 @@ def Kosaraju(graph):
 
 def arestronglyConnected(s, vertexA, vertexB):
     return scc.stronglyConnected(s, vertexA, vertexB)
+
+
+def sccCount(graph, scc2, vert):
+    return scc.sccCount(graph, scc2, vert)
 
 
 def getCriticalVertex(analyzer):
@@ -424,6 +447,19 @@ def DijsktraAlgo(graph, vertexA):
 
 def findDistTo(caminominimo, vertexB):
     return dijsktra.pathTo(caminominimo, vertexB)
+
+def createRoute(path):
+    vertices = []
+    distancia = 0 
+    vertices.append(['PARADA', 'DISTANCIA'])
+    vertices.append(['', ''])
+    for vertex in lt.iterator(path): 
+        vertexA = vertex['vertexA']
+        weight = vertex['weight']
+        distancia += float(weight)
+        vertices.append([vertexA, weight])
+
+    return (vertices, distancia)
 
 
 def findMST(graph):
