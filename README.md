@@ -21,3 +21,5 @@ Estudiantes:
 
 Jose Luis Tavera Ruiz - 201821999
 Juan Diego Yepes Parra - 202022391
+
+nosotros quedando en el hall of fame: https://youtu.be/Rpsztdg3Xsw

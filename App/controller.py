@@ -20,12 +20,7 @@
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
 
-# from requests import get
-# import geopandas
 import folium
-from Data import country_finder
-# from IPython.display import HTML
-# import pandas as pd
 import config as cf
 from App import model
 from DISClib.ADT import map as mp
@@ -56,76 +51,6 @@ def init():
     return analyzer
 
 # Funciones para la carga de datos
-
-
-def createMap(analyzer, filename1, filename2, filename3):
-    Map = folium.Map()
-    # Primera iteración: Capitales
-    landingFile = cf.data_dir + filename3
-    input_file = csv.DictReader(open(landingFile, encoding="utf-8"),
-                                delimiter=",")
-    capital_locations = {}
-    for i in input_file:
-        country_name = i['CountryName']
-        name = str(i['CapitalName'])
-        lat = float(i['CapitalLatitude'])
-        longt = float(i['CapitalLongitude'])
-        capital_locations[country_name] = (lat, longt)
-
-        linea = [lat, longt]
-        folium.Marker(
-            [lat, longt], popup=name, tooltip='click').add_to(Map)
-
-    # Segunda Iteración: Landing Points
-    # Decir si pertenecen al mismo pais, que los relacione con la capital,
-    # buscando con la funcion de decir a que pais pertenece la relacion con la
-    # capital
-    landingFile = cf.data_dir + filename1
-    input_file = csv.DictReader(open(landingFile, encoding="utf-8"),
-                                delimiter=",")
-
-    for i in input_file:
-        name = i['name'].split(', ')[0]
-        name = name.lower()
-        latitude = float(i['latitude'])
-        longitude = float(i['longitude'])
-
-        folium.Marker(
-            [latitude, longitude], popup=name, tooltip='click').add_to(Map)
-        coordinates = str(latitude) + ', ' + str(longitude)
-
-        belonging_country_info = country_finder.findCountry(coordinates)
-        try:
-            belonging_country = belonging_country_info['address']
-            belonging_country = belonging_country['country_code']
-            belonging_country = belonging_country.upper()
-            belonging_country_name = mp.get(
-                analyzer['country_codes'], belonging_country)['value']
-            destination_coordinates = capital_locations[belonging_country_name]
-            destination_list_coordinates = [
-                float(destination_coordinates[0]),
-                float(destination_coordinates[1])]
-            linea = [
-                [float(latitude), float(longitude)],
-                destination_list_coordinates]
-            folium.PolyLine(linea, color='green').add_to(Map)
-        except KeyError:
-            pass
-
-    # Tercera Iteración: Connections
-    landingFile = cf.data_dir + filename2
-    input_file = csv.DictReader(open(landingFile, encoding="utf-8"),
-                                delimiter=",")
-    for i in input_file:
-        pointA = i['\ufefforigin']
-        pointB = i['destination']
-        coordA = mp.get(analyzer['LP_lat_long'], pointA)['value']
-        coordB = mp.get(analyzer['LP_lat_long'], pointB)['value']
-        linea = [coordA, coordB]
-        folium.PolyLine(linea, color='red').add_to(Map)
-
-    direction = cf.data_dir + 'Map.html'
-    Map.save(direction)
 
 
 def loadLandingPoints(analyzer, filename):

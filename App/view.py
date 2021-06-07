@@ -26,6 +26,8 @@ import threading
 from DISClib.ADT import map as mp
 from Data import emojis
 from App import controller
+import time
+import tracemalloc
 assert config
 
 
@@ -71,11 +73,27 @@ def printMenu():
 
 
 def optionTwo(analyzer):
+    delta_time = -1.0
+    delta_memory = -1.0
+
+    tracemalloc.start()
+    start_time = getTime()
+    start_memory = getMemory()
+
     print("\nCargando información... " + emojis.random_emoji(4))
     controller.loadLandingPoints(analyzer, landing_points)
     controller.loadCountries(analyzer, countries)
     controller.loadConnections(analyzer, connections)
     print('Se ha cargado la información exitosamente.')
+
+    stop_memory = getMemory()
+    stop_time = getTime()
+    tracemalloc.stop()
+
+    delta_time = stop_time - start_time
+    delta_memory = deltaMemory(start_memory, stop_memory)
+
+    print('Tiempo:', delta_time, '[ms]', '||', 'Memoria:', delta_memory, 'kb')
 
 
 def optionThree(analyzer):
@@ -84,6 +102,7 @@ def optionThree(analyzer):
     Encontrar clústeres: Kosaraju,
     decir si dos vértices están conectados
     '''
+
     graph = analyzer['connections']
     vertexA = input('Ingrese el vértice de origen: ')
     vertexA = vertexA.lower()
@@ -91,6 +110,13 @@ def optionThree(analyzer):
     vertexB = input('Ingrese el vértice destino: ')
     vertexB = vertexB.lower()
     vertexB_cod = controller.searchCountry(vertexB, analyzer)
+
+    delta_time = -1.0
+    delta_memory = -1.0
+
+    tracemalloc.start()
+    start_time = getTime()
+    start_memory = getMemory()
     Req1 = (controller.req1(graph, vertexA_cod, vertexB_cod))
     if Req1[0] is True:
         print('\n')
@@ -98,8 +124,35 @@ def optionThree(analyzer):
     else:
         print('Los vértices no se encuentran fuertemente conectados')
     print('El número de total de clusters en la red es de: ' + str(Req1[1]))
+
+    stop_memory = getMemory()
+    stop_time = getTime()
+    tracemalloc.stop()
+
+    delta_time = stop_time - start_time
+    delta_memory = deltaMemory(start_memory, stop_memory)
+
+    print('Tiempo:', delta_time, '[ms]', '||', 'Memoria:', delta_memory, 'kb')
+
+    delta_time = -1.0
+    delta_memory = -1.0
+
+    tracemalloc.start()
+    start_time = getTime()
+    start_memory = getMemory()
+
+    print("\nTiempo de graficar este requerimiento:")
     djKRISTA = controller.req3(analyzer, vertexA_cod, vertexB_cod)
     controller.graphicateReq1(analyzer, djKRISTA[0])
+
+    stop_memory = getMemory()
+    stop_time = getTime()
+    tracemalloc.stop()
+
+    delta_time = stop_time - start_time
+    delta_memory = deltaMemory(start_memory, stop_memory)
+
+    print('Tiempo:', delta_time, '[ms]', '||', 'Memoria:', delta_memory, 'kb')
 
 
 def optionFour(analyzer):
@@ -109,16 +162,50 @@ def optionFour(analyzer):
     mayor grado
     Puede haber más de uno
     '''
+    delta_time = -1.0
+    delta_memory = -1.0
+
+    tracemalloc.start()
+    start_time = getTime()
+    start_memory = getMemory()
+
     definitiva = controller.req2(analyzer)
     PrintDefinitiva(analyzer, definitiva[0], definitiva[1])
+
+    stop_memory = getMemory()
+    stop_time = getTime()
+    tracemalloc.stop()
+
+    delta_time = stop_time - start_time
+    delta_memory = deltaMemory(start_memory, stop_memory)
+
+    print('Tiempo:', delta_time, '[ms]', '||', 'Memoria:', delta_memory, 'kb')
+
+    delta_time = -1.0
+    delta_memory = -1.0
+
+    tracemalloc.start()
+    start_time = getTime()
+    start_memory = getMemory()
+
+    print("\nTiempo de graficar este requerimiento:")
     controller.graphicateReq2(analyzer, definitiva)
+
+    stop_memory = getMemory()
+    stop_time = getTime()
+    tracemalloc.stop()
+
+    delta_time = stop_time - start_time
+    delta_memory = deltaMemory(start_memory, stop_memory)
+
+    print('Tiempo:', delta_time, '[ms]', '||', 'Memoria:', delta_memory, 'kb')
 
 
 def optionFive(analyzer):
-    # TODO Poner capital connection vertex
     """VertexA, VertexB
     Ruta mínima en distancia,
     Fórmula Haversine con una librería"""
+
     print(
         "\nADVERTENCIA: La distancia se encontrará entre las capitales de",
         "los países que seleccione." + emojis.random_emoji(1))
@@ -128,45 +215,193 @@ def optionFive(analyzer):
     paisB = input('Ingrese el país destino: ')
     paisB = paisB.lower()
     vertexB = controller.searchVertexCountry(paisB, analyzer)
+
+    delta_time = -1.0
+    delta_memory = -1.0
+
+    tracemalloc.start()
+    start_time = getTime()
+    start_memory = getMemory()
+
     ruta = controller.req3(analyzer, vertexA, vertexB)
+
+    stop_memory = getMemory()
+    stop_time = getTime()
+    tracemalloc.stop()
+
+    delta_time = stop_time - start_time
+    delta_memory = deltaMemory(start_memory, stop_memory)
+
     PrintRutaMinima(ruta)
+    print('Tiempo:', delta_time, '[ms]', '||', 'Memoria:', delta_memory, 'kb')
+
+    delta_time = -1.0
+    delta_memory = -1.0
+
+    tracemalloc.start()
+    start_time = getTime()
+    start_memory = getMemory()
+
+    print("\nTiempo de graficar este requerimiento:")
     controller.graphicateReq3(analyzer, ruta[0])
+
+    stop_memory = getMemory()
+    stop_time = getTime()
+    tracemalloc.stop()
+
+    delta_time = stop_time - start_time
+    delta_memory = deltaMemory(start_memory, stop_memory)
+
+    print('Tiempo:', delta_time, '[ms]', '||', 'Memoria:', delta_memory, 'kb')
 
 
 def optionSix(analyzer):
     """Red de expansión mínima: MST"""
+    delta_time = -1.0
+    delta_memory = -1.0
+
+    tracemalloc.start()
+    start_time = getTime()
+    start_memory = getMemory()
+
     req4 = controller.req4(analyzer['connections'])
     PrintREQ4(req4)
+
+    stop_memory = getMemory()
+    stop_time = getTime()
+    tracemalloc.stop()
+
+    delta_time = stop_time - start_time
+    delta_memory = deltaMemory(start_memory, stop_memory)
+
+    print('Tiempo:', delta_time, '[ms]', '||', 'Memoria:', delta_memory, 'kb')
+
+    print(
+        '\nDesea ver la ruta de la rama más larga? Digite 1, de lo contrario')
+    print('digite cualquier otra cosa.')
+    opcion = input('~')
+    if opcion == '1':
+        print(req4[2][1])
+
+    delta_time = -1.0
+    delta_memory = -1.0
+
+    tracemalloc.start()
+    start_time = getTime()
+    start_memory = getMemory()
+
+    print("\nTiempo de graficar este requerimiento:")
     controller.graphicateReq4(analyzer, req4[2][2])
+
+    stop_memory = getMemory()
+    stop_time = getTime()
+    tracemalloc.stop()
+
+    delta_time = stop_time - start_time
+    delta_memory = deltaMemory(start_memory, stop_memory)
+
+    print('Tiempo:', delta_time, '[ms]', '||', 'Memoria:', delta_memory, 'kb')
 
 
 def optionSeven(analyzer):
     """Impacto que tendría el fallo de un LP"""
+
     LP = input('Ingrese el landing point que falló: ')
     landingPoint = controller.searchCountry(LP.lower(), analyzer)
+
+    delta_time = -1.0
+    delta_memory = -1.0
+
+    tracemalloc.start()
+    start_time = getTime()
+    start_memory = getMemory()
     paises = controller.req5(analyzer, landingPoint)
+
+    stop_memory = getMemory()
+    stop_time = getTime()
+    tracemalloc.stop()
+
+    delta_time = stop_time - start_time
+    delta_memory = deltaMemory(start_memory, stop_memory)
+
     sorted_paises = controller.SortCountries(analyzer, paises, LP)
     PaisesAfectados(sorted_paises)
+
+    print('Tiempo:', delta_time, '[ms]', '||', 'Memoria:', delta_memory, 'kb')
+
+    delta_time = -1.0
+    delta_memory = -1.0
+
+    tracemalloc.start()
+    start_time = getTime()
+    start_memory = getMemory()
+
+    print("\nTiempo de graficar este requerimiento:")
     controller.graphicateReq5(analyzer, paises, LP)
+
+    stop_memory = getMemory()
+    stop_time = getTime()
+    tracemalloc.stop()
+
+    delta_time = stop_time - start_time
+    delta_memory = deltaMemory(start_memory, stop_memory)
+
+    print('Tiempo:', delta_time, '[ms]', '||', 'Memoria:', delta_memory, 'kb')
 
 
 def optionEight(analyzer):
+
     pais = input('Ingrese el nombre del país: ')
     cable = input('Ingrese el nombre del cable: ')
+
+    delta_time = -1.0
+    delta_memory = -1.0
+
+    tracemalloc.start()
+    start_time = getTime()
+    start_memory = getMemory()
+
     anchos_banda = (controller.req6(analyzer, pais, cable))
+
+    stop_memory = getMemory()
+    stop_time = getTime()
+    tracemalloc.stop()
+
+    delta_time = stop_time - start_time
+    delta_memory = deltaMemory(start_memory, stop_memory)
+
     PrintAnchodeBanda(anchos_banda)
+    print('Tiempo:', delta_time, '[ms]', '||', 'Memoria:', delta_memory, 'kb')
 
 
 def optionNine(analyzer):
     '''Dada la IP encontrar el pais y luego encontrar ruta minima'''
+
     ip_1 = input('Ingrese la IP de orígen: ')
     location_1 = controller.getLocation(ip_1, analyzer)
     vertexA = controller.searchVertexCountry(location_1, analyzer)
     ip_2 = input('Ingrese la IP de destino: ')
     location_2 = controller.getLocation(ip_2, analyzer)
     vertexB = controller.searchVertexCountry(location_2, analyzer)
+
+    delta_time = -1.0
+    delta_memory = -1.0
+
+    tracemalloc.start()
+    start_time = getTime()
+    start_memory = getMemory()
+
     ruta = (controller.req3(analyzer, vertexA, vertexB))
+
+    stop_memory = getMemory()
+    stop_time = getTime()
+    tracemalloc.stop()
+
+    delta_time = stop_time - start_time
+    delta_memory = deltaMemory(start_memory, stop_memory)
+
     PrintRutaMinima(ruta)
+    print('Tiempo:', delta_time, '[ms]', '||', 'Memoria:', delta_memory, 'kb')
 
 
 """
@@ -249,11 +484,38 @@ def PrintREQ4(result):
     print('Número de nodos conectados:', result[0])
     print("Distancia total del MST:", result[1])
     print("Número de arcos de la rama más larga", result[2][0])
-    print('Desea ver la ruta de la rama más larga? Digite 1, de lo contrario')
-    print('digite cualquier otra cosa.')
-    opcion = input('~')
-    if opcion == '1':
-        print(result[2][1])
+
+
+# FUNCIONES PARA TOMAR DE DATOS
+
+def getTime():
+    """
+    devuelve el instante tiempo de procesamiento en milisegundos
+    """
+    return float(time.perf_counter()*1000)
+
+
+def getMemory():
+    """
+    toma una muestra de la memoria alocada en instante de tiempo
+    """
+    return tracemalloc.take_snapshot()
+
+
+def deltaMemory(start_memory, stop_memory):
+    """
+    calcula la diferencia en memoria alocada del programa entre dos
+    instantes de tiempo y devuelve el resultado en bytes (ej.: 2100.0 B)
+    """
+    memory_diff = stop_memory.compare_to(start_memory, "filename")
+    delta_memory = 0.0
+
+    # suma de las diferencias en uso de memoria
+    for stat in memory_diff:
+        delta_memory = delta_memory + stat.size_diff
+    # de Byte -> kByte
+    delta_memory = delta_memory/1024.0
+    return delta_memory
 
 
 """
