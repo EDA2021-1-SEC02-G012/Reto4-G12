@@ -30,6 +30,7 @@ import config as cf
 from App import model
 from DISClib.ADT import map as mp
 from DISClib.ADT import list as lt
+from DISClib.ADT.graph import gr
 import csv
 
 
@@ -229,17 +230,15 @@ def req3(analyzer, vertexA, vertexB):
         return "Error en los vértices"
 
 
-def req4(graph, bool):
+def req4(graph):
     mst = model.findMST(graph)
     dist_to = mst['distTo']
     edge_to = mst['edgeTo']
     no_nodos_conectados = dist_to['size']
     distance = model.get_total_distance(dist_to)
     longest_branch = model.doBFS(edge_to)
-    if not bool:
-        return no_nodos_conectados, distance, longest_branch[0]
-    else:
-        return no_nodos_conectados, distance, longest_branch
+
+    return no_nodos_conectados, distance, longest_branch
 
 
 def req5(analyzer, landing_point):
@@ -261,3 +260,177 @@ def req7(analyzer, vertexA, vertexB):
         return ruta
     else:
         return "Error en los vértices"
+
+
+# Funciones para graficar en mapas
+
+def graphicateReq1(analyzer, route):
+    map1 = folium.Map()
+    route.pop(0)
+    route.pop(0)
+    rutas = []
+
+    for i in range(len(route)):
+        landinpoint = route[i][0]
+        if len(landinpoint) > 5:
+            split = landinpoint.split('-')
+            split = split[0]
+            if float(split) < 20000:
+                verticei = mp.get(analyzer['LP_lat_long'], split)['value']
+                folium.Marker(verticei).add_to(map1)
+                rutas.append(verticei)
+            else:
+                split2 = landinpoint.split("Capital Connection ")
+                split2 = split2[1]
+                countri = mp.get(analyzer['countries2'], split2)['value']
+                verticei = [float(countri['CapitalLatitude']), float(
+                    countri['CapitalLongitude'])]
+                folium.Marker(verticei).add_to(map1)
+                rutas.append(verticei)
+
+    folium.PolyLine(rutas).add_to(map1)
+
+    direction = cf.data_dir + 'MapREQ1.html'
+    map1.save(direction)
+
+
+def graphicateReq2(analyzer, definitiva):
+    map2 = folium.Map()
+    vertice = mp.get(analyzer['LP_lat_long'], definitiva[0][0])['value']
+
+    folium.Marker(vertice).add_to(map2)
+
+    adyacentes = gr.adjacents(analyzer['connections'], definitiva[0][0])
+    gral_list = []
+
+    for i in lt.iterator(adyacentes):
+        adj = gr.adjacents(analyzer['connections'], i)
+        for k in lt.iterator(adj):
+            if definitiva[0][0] not in k:
+                gral_list.append(k)
+
+    for i in gral_list:
+        split = i.split('-')
+        split = split[0]
+        if float(split) < 20000:
+            verticei = mp.get(analyzer['LP_lat_long'], split)['value']
+            folium.Marker(verticei).add_to(map2)
+            route = [vertice, verticei]
+            folium.PolyLine(route).add_to(map2)
+        else:
+            split2 = i.split("Capital Connection ")
+            split2 = split2[1]
+            countri = mp.get(analyzer['countries2'], split2)['value']
+            verticei = [float(countri['CapitalLatitude']), float(
+                countri['CapitalLongitude'])]
+
+            folium.Marker(verticei).add_to(map2)
+            route = [vertice, verticei]
+            folium.PolyLine(route).add_to(map2)
+
+    direction = cf.data_dir + 'MapREQ2.html'
+    map2.save(direction)
+
+
+def graphicateReq3(analyzer, route):
+    map3 = folium.Map()
+    route.pop(0)
+    route.pop(0)
+    rutas = []
+
+    for i in range(len(route)):
+        landinpoint = route[i][0]
+        if len(landinpoint) > 5:
+            split = landinpoint.split('-')
+            split = split[0]
+            if float(split) < 20000:
+                verticei = mp.get(analyzer['LP_lat_long'], split)['value']
+                folium.Marker(verticei).add_to(map3)
+                rutas.append(verticei)
+            else:
+                split2 = landinpoint.split("Capital Connection ")
+                split2 = split2[1]
+                countri = mp.get(analyzer['countries2'], split2)['value']
+                verticei = [float(countri['CapitalLatitude']), float(
+                    countri['CapitalLongitude'])]
+                folium.Marker(verticei).add_to(map3)
+                rutas.append(verticei)
+
+    folium.PolyLine(rutas).add_to(map3)
+
+    direction = cf.data_dir + 'MapREQ3.html'
+    map3.save(direction)
+
+
+def graphicateReq4(analyzer, minigraph):
+    map4 = folium.Map()
+    vertexes = gr.vertices(minigraph)
+    edges = gr.edges(minigraph)
+
+    for i in lt.iterator(vertexes):
+        split = i.split('-')
+        split = split[0]
+        if float(split) < 20000:
+            vertice = mp.get(analyzer['LP_lat_long'], split)['value']
+            folium.Marker(vertice).add_to(map4)
+        else:
+            split2 = i.split("Capital Connection ")
+            split2 = split2[1]
+            countri = mp.get(analyzer['countries2'], split2)['value']
+            verticei = [float(countri['CapitalLatitude']), float(
+                countri['CapitalLongitude'])]
+            folium.Marker(verticei).add_to(map4)
+
+    for i in lt.iterator(edges):
+        vertexA = i['vertexA']
+        vertexB = i['vertexB']
+        splitA = vertexA.split('-')
+        splitA = splitA[0]
+        splitB = vertexB.split('-')
+        splitB = splitB[0]
+        route = []
+
+        if float(splitA) < 20000:
+            verticei = mp.get(analyzer['LP_lat_long'], splitA)['value']
+            route = [verticei]
+        else:
+            split2 = vertexA.split("Capital Connection ")
+            split2 = split2[1]
+            countri = mp.get(analyzer['countries2'], split2)['value']
+            verticei = [float(countri['CapitalLatitude']), float(
+                countri['CapitalLongitude'])]
+            route = [verticei]
+
+        if float(splitB) < 20000:
+            verticei = mp.get(analyzer['LP_lat_long'], splitB)['value']
+            route.append(verticei)
+        else:
+            split2 = vertexB.split("Capital Connection ")
+            split2 = split2[1]
+            countri = mp.get(analyzer['countries2'], split2)['value']
+            verticei = [float(countri['CapitalLatitude']), float(
+                countri['CapitalLongitude'])]
+            route.append(verticei)
+
+        folium.PolyLine(route).add_to(map4)
+
+    direction = cf.data_dir + 'MapREQ4.html'
+    map4.save(direction)
+
+
+def graphicateReq5(analyzer, paises, LP):
+    map5 = folium.Map()
+    landingPoint_id = mp.get(analyzer['landing_points'], LP.lower())['value']
+    coord = mp.get(analyzer['LP_lat_long'], landingPoint_id)['value']
+    folium.Marker(coord).add_to(map5)
+
+    for pais in paises:
+        countri = mp.get(analyzer['countries2'], pais)['value']
+        countrycords = [float(countri['CapitalLatitude']),
+                        float(countri['CapitalLongitude'])]
+        folium.Marker(countrycords).add_to(map5)
+        route = [coord, countrycords]
+        folium.PolyLine(route).add_to(map5)
+
+    direction = cf.data_dir + 'MapREQ5.html'
+    map5.save(direction)

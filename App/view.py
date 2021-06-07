@@ -23,7 +23,7 @@
 import sys
 import config
 import threading
-
+from DISClib.ADT import map as mp
 from Data import emojis
 from App import controller
 assert config
@@ -68,9 +68,6 @@ def printMenu():
     print(
         "9️⃣ - Encontrar ruta mínima dadas dos IPs"
         + emojis.random_emoji(2))
-    print(
-        "🔟 - Hacer el mapa"
-        + emojis.random_emoji(2))
 
 
 def optionTwo(analyzer):
@@ -101,6 +98,8 @@ def optionThree(analyzer):
     else:
         print('Los vértices no se encuentran fuertemente conectados')
     print('El número de total de clusters en la red es de: ' + str(Req1[1]))
+    djKRISTA = controller.req3(analyzer, vertexA_cod, vertexB_cod)
+    controller.graphicateReq1(analyzer, djKRISTA[0])
 
 
 def optionFour(analyzer):
@@ -110,7 +109,9 @@ def optionFour(analyzer):
     mayor grado
     Puede haber más de uno
     '''
-    controller.req2(analyzer)
+    definitiva = controller.req2(analyzer)
+    PrintDefinitiva(analyzer, definitiva[0], definitiva[1])
+    controller.graphicateReq2(analyzer, definitiva)
 
 
 def optionFive(analyzer):
@@ -129,18 +130,14 @@ def optionFive(analyzer):
     vertexB = controller.searchVertexCountry(paisB, analyzer)
     ruta = controller.req3(analyzer, vertexA, vertexB)
     PrintRutaMinima(ruta)
+    controller.graphicateReq3(analyzer, ruta[0])
 
 
 def optionSix(analyzer):
     """Red de expansión mínima: MST"""
-    print('Desea imprimir el camino mayor? (Digite Y de así serlo)')
-    print('De lo contrario digite cualquier otra cosa')
-    option = input('~')
-    if option == 'Y' or option == 'y':
-        bool = True
-    else:
-        bool = False
-    print(controller.req4(analyzer['connections'], bool))
+    req4 = controller.req4(analyzer['connections'])
+    PrintREQ4(req4)
+    controller.graphicateReq4(analyzer, req4[2][2])
 
 
 def optionSeven(analyzer):
@@ -150,6 +147,7 @@ def optionSeven(analyzer):
     paises = controller.req5(analyzer, landingPoint)
     sorted_paises = controller.SortCountries(analyzer, paises, LP)
     PaisesAfectados(sorted_paises)
+    controller.graphicateReq5(analyzer, paises, LP)
 
 
 def optionEight(analyzer):
@@ -169,14 +167,6 @@ def optionNine(analyzer):
     vertexB = controller.searchVertexCountry(location_2, analyzer)
     ruta = (controller.req3(analyzer, vertexA, vertexB))
     PrintRutaMinima(ruta)
-
-
-def optionTen(analyzer):
-    '''Hacer el mapa :)'''
-    print("\nF no lo hicimos :((")
-    print(emojis.random_emoji(20))
-    controller.createMap(analyzer, landing_points, connections, countries)
-    print("\naaaa te creas (revisar carpeta data uwu)")
 
 
 """
@@ -245,6 +235,27 @@ def PrintAnchodeBanda(anchos_banda):
         print(row_format.format(*row))
 
 
+def PrintDefinitiva(analyzer, definitiva, mayor):
+    for cable in definitiva:
+        print('\n')
+        print('ID:', cable)
+        print(
+            "Country:",
+            mp.get(analyzer['landing_points_map'], cable)['value']['name'])
+        print('Cables:', mayor)
+
+
+def PrintREQ4(result):
+    print('Número de nodos conectados:', result[0])
+    print("Distancia total del MST:", result[1])
+    print("Número de arcos de la rama más larga", result[2][0])
+    print('Desea ver la ruta de la rama más larga? Digite 1, de lo contrario')
+    print('digite cualquier otra cosa.')
+    opcion = input('~')
+    if opcion == '1':
+        print(result[2][1])
+
+
 """
 Menu principal
 """
@@ -283,9 +294,6 @@ def thread_cycle():
 
         elif int(inputs) == 9:
             optionNine(analyzer)
-
-        elif int(inputs) == 10:
-            optionTen(analyzer)
 
         else:
             sys.exit(0)

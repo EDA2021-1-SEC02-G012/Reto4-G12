@@ -356,24 +356,23 @@ def searchCountry(name, analyzer):
     else:
         return None
 
-def SortCountries(analyzer, paises, LP): 
+
+def SortCountries(analyzer, paises, LP):
     countries = analyzer['countries2']
     sorted_paises = {}
     landingPoint_id = mp.get(analyzer['landing_points'], LP.lower())['value']
     coord = mp.get(analyzer['LP_lat_long'], landingPoint_id)['value']
-    for countri1 in paises: 
+    for countri1 in paises:
         countri = mp.get(countries, countri1)['value']
         dist = haversine.haversine(
                     float(countri['CapitalLatitude']),
                     float(countri['CapitalLongitude']),
                     float(coord[0]),
                     float(coord[1]))
-        
+
         sorted_paises[countri1] = dist
 
     return sorted_paises
-        
-
 
 
 def searchVertexCountry(pais, analyzer):
@@ -433,13 +432,7 @@ def getCriticalVertex(analyzer):
         if size == mayor:
             definitiva.append(k)
 
-    for cable in definitiva:
-        print('\n')
-        print('ID:', cable)
-        print(
-            "Country:",
-            mp.get(analyzer['landing_points_map'], cable)['value']['name'])
-        print('Cables:', mayor)
+    return definitiva, mayor
 
 
 def DijsktraAlgo(graph, vertexA):
@@ -449,12 +442,13 @@ def DijsktraAlgo(graph, vertexA):
 def findDistTo(caminominimo, vertexB):
     return dijsktra.pathTo(caminominimo, vertexB)
 
+
 def createRoute(path):
     vertices = []
-    distancia = 0 
+    distancia = 0
     vertices.append(['PARADA', 'DISTANCIA'])
     vertices.append(['', ''])
-    for vertex in lt.iterator(path): 
+    for vertex in lt.iterator(path):
         vertexA = vertex['vertexA']
         weight = vertex['weight']
         distancia += float(weight)
@@ -514,7 +508,7 @@ def doBFS(edgeTo):
         if i == mayor:
             caminomaslargo = distNsize[i]
 
-    return mayor, caminomaslargo
+    return mayor, caminomaslargo, minigraph
 
 
 def findCountriesFromAdjacents(graph, landingPoint):
